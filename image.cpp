@@ -1,11 +1,6 @@
 #include "image.hpp"
 #include "rect.hpp"
 
-/*Image::Image() : texture(nullptr)
-{
-
-}*/
-
 Image::Image() : texture(nullptr)
 {
 
@@ -15,11 +10,6 @@ Image::~Image()
 {
     SDL_DestroyTexture(texture);
 }
-
-/*void Image::draw(SDL_Renderer* ren, SDL_Rect* srect, SDL_Rect* drect)
-{
-    SDL_RenderCopy(ren, texture, srect, drect);
-}*/
 
 void Image::draw(SDL_Renderer* ren, const Rect& srect, const Rect& drect)
 {

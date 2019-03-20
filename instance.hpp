@@ -3,17 +3,23 @@
 
 #include <vector>
 #include "hero.hpp"
+#include "map.hpp"
 
-/*class Instance
+class Game;
+class Hero;
+class Instance
 {
 private:
 
 public:
-    Instance(std::vector<Hero*> &heroes, SDL_Window* win, SDL_Renderer* ren, Map &map);
+    //Game* game;
+
+
+    Instance();
     ~Instance();
 
-    int instantiate(std::vector<Hero*> &heroes, SDL_Window* win, SDL_Renderer* ren, Map &map);
-};*/
-
+    int instantiate(std::vector<Hero*> &heroes, SDL_Window* &win, SDL_Renderer* &ren, Map &map);
+    void clear(std::vector<Hero*> &heroes, SDL_Window* &win, SDL_Renderer* &ren, Map &map);
+};
 
 #endif

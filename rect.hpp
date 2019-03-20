@@ -1,7 +1,7 @@
 #ifndef RECT_HPP
 #define RECT_HPP
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 class Rect
 {

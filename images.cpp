@@ -1,5 +1,10 @@
 #include "images.hpp"
 
+Images::Images()
+{
+
+}
+
 Images::Images(SDL_Renderer* ren) : ren(ren)
 {
 

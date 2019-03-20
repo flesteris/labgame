@@ -1,10 +1,10 @@
 #include "instance.hpp"
 #include <iostream>
-#include <SDL.h>
-/*
-Instance::Instance(std::vector<Hero*> &heroes, SDL_Window* win, SDL_Renderer* ren, Map &map)
+#include <SDL2/SDL.h>
+
+Instance::Instance()
 {
-    instantiate(heroes, win, ren, map);
+
 }
 
 Instance::~Instance()
@@ -12,7 +12,7 @@ Instance::~Instance()
 
 }
 
-int Instance::instantiate(std::vector<Hero*> &heroes, SDL_Window* win, SDL_Renderer* ren, Map &map)
+int Instance::instantiate(std::vector<Hero*> &heroes, SDL_Window* &win, SDL_Renderer* &ren, Map &map)
 {
     int x, y;
 
@@ -79,6 +79,7 @@ int Instance::instantiate(std::vector<Hero*> &heroes, SDL_Window* win, SDL_Rende
 
     if (!map.load_map_data("maps//map_1_data.txt"))
     {
+        std::cout << "Failed to load map data!  ."<< std::endl;
         SDL_DestroyRenderer(ren);
         SDL_DestroyWindow(win);
         SDL_Quit();
@@ -91,4 +92,15 @@ int Instance::instantiate(std::vector<Hero*> &heroes, SDL_Window* win, SDL_Rende
     }
     return 0;
 }
-*/
+
+void Instance::clear(std::vector<Hero*> &heroes, SDL_Window* &win, SDL_Renderer* &ren, Map &map)
+{
+    SDL_DestroyRenderer(ren);
+    SDL_DestroyWindow(win);
+    SDL_Quit();
+    for (int i = 0; i < (int)heroes.size(); i++)
+    {
+        delete heroes[i];
+    }
+    heroes.clear();
+}

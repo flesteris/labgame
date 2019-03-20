@@ -15,8 +15,7 @@ Hero::~Hero()
 {
 
 }
-
-int Hero::move(Images &images, SDL_Renderer* ren, Rect &hero_drect, Map &map)
+int Hero::move(Game &game)
 {
     if(m_current_movement_points == 0)
     {
@@ -108,103 +107,102 @@ int Hero::move(Images &images, SDL_Renderer* ren, Rect &hero_drect, Map &map)
     }
 
     m_current_movement_points--;
-    draw_land(m_x, m_y, map, images, ren);
-    images.hero_images[m_direction].draw(ren, Rect(), hero_drect);
+    draw_land(game);
+    game.images->hero_images[m_direction].draw(game.ren, Rect(), game.hero_drect);
     m_direction = NO_DIRECTION;
     return 1;
 }
 
-void draw_land(int x, int y, Map &map, Images &images, SDL_Renderer* ren)
+void draw_land(Game &game)
 {
     Rect tile_drect, tile_srect;
-    for(int i = x - 11, k = 0; i < x + 12; i++, k++)
+    for(int i = game.heroes[0]->get_x() - 11, k = 0; i < game.heroes[0]->get_x() + 12; i++, k++)
     {
         if(i < 0 || i > 71)
         {
-            for(int j = y - 8, l = 0; j < y + 9; j++, l++)
+            for(int j = game.heroes[0]->get_y() - 8, l = 0; j < game.heroes[0]->get_y() + 9; j++, l++)
             {
                 tile_drect = {k*40 + 20, l*40, 40, 40};
-                images.tiles[OFF_MAP_TILE].draw(ren, Rect(), tile_drect);
+                game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
             }
         }
         else
         {
-            for(int j = y - 8, l = 0; j < y + 9; j++, l++)
+            for(int j = game.heroes[0]->get_y() - 8, l = 0; j < game.heroes[0]->get_y() + 9; j++, l++)
             {
                 if(j < 0 || j > 71)
                 {
                     tile_drect = {k*40 + 20, l*40, 40, 40};
-                    images.tiles[OFF_MAP_TILE].draw(ren, Rect(), tile_drect);
+                    game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
                 }
                 else
                 {
                     tile_drect = {k*40 + 20, l*40, 40, 40};
-                    images.tiles[map.tiles[i][j] - 1].draw(ren, Rect(), tile_drect);
+                    game.images->tiles[game.map.tiles[i][j] - 1].draw(game.ren, Rect(), tile_drect);
                 }
             }
         }
     }
 
-    for(int i = x - 12, k = 0; k < 1; i++, k++)
+    for(int i = game.heroes[0]->get_x() - 12, k = 0; k < 1; i++, k++)
     {
         if(i < 0)
         {
-            for(int j = y - 8, l = 0; j < y + 9; j++, l++)
+            for(int j = game.heroes[0]->get_y() - 8, l = 0; j < game.heroes[0]->get_y() + 9; j++, l++)
             {
                 tile_srect = {20, 0, 20, 40};
                 tile_drect = {0*40, l*40, 20, 40};
-                images.tiles[OFF_MAP_TILE].draw(ren, Rect(), tile_drect);
+                game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
             }
         }
         else
         {
-            for(int j = y - 8, l = 0; j < y + 9; j++, l++)
+            for(int j = game.heroes[0]->get_y() - 8, l = 0; j < game.heroes[0]->get_y() + 9; j++, l++)
             {
                 if(j < 0 || j > 71)
                 {
                     tile_srect = {20, 0, 20, 40};
                     tile_drect = {0*40, l*40, 20, 40};
-                    images.tiles[OFF_MAP_TILE].draw(ren, Rect(), tile_drect);
+                    game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
                 }
                 else
                 {
                     tile_srect = {20, 0, 20, 40};
                     tile_drect = {0*40, l*40, 20, 40};
-                    images.tiles[map.tiles[i][j] - 1].draw(ren, Rect(), tile_drect);
+                    game.images->tiles[game.map.tiles[i][j] - 1].draw(game.ren, Rect(), tile_drect);
                 }
             }
         }
     }
 
-    for(int i = x + 12, k = 0; k < 1; i++, k++)
+    for(int i = game.heroes[0]->get_x() + 12, k = 0; k < 1; i++, k++)
     {
         if(i > 71)
         {
-            for(int j = y - 8, l = 0; j < y + 9; j++, l++)
+            for(int j = game.heroes[0]->get_y() - 8, l = 0; j < game.heroes[0]->get_y() + 9; j++, l++)
             {
                 tile_srect = {0, 0, 20, 40};
                 tile_drect = {24*40 - 20, l*40, 20, 40};
-                images.tiles[OFF_MAP_TILE].draw(ren, Rect(), tile_drect);
+                game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
             }
         }
         else
         {
-            for(int j = y - 8, l = 0; j < y + 9; j++, l++)
+            for(int j = game.heroes[0]->get_y() - 8, l = 0; j < game.heroes[0]->get_y() + 9; j++, l++)
             {
                 if(j < 0 || j > 71)
                 {
                     tile_srect = {0, 0, 20, 40};
                     tile_drect = {24*40 - 20, l*40, 20, 40};
-                    images.tiles[OFF_MAP_TILE].draw(ren, Rect(), tile_drect);
+                    game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
                 }
                 else
                 {
                     tile_srect = {0, 0, 20, 40};
                     tile_drect = {24*40 - 20, l*40, 20, 40};
-                    images.tiles[map.tiles[i][j] - 1].draw(ren, Rect(), tile_drect);
+                    game.images->tiles[game.map.tiles[i][j] - 1].draw(game.ren, Rect(), tile_drect);
                 }
             }
         }
     }
 }
-

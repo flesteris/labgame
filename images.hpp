@@ -4,7 +4,7 @@
 #include "image.hpp"
 #include "game.hpp"
 #include <iostream>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 enum TileType
 {
@@ -48,6 +48,7 @@ public:
     Image hero_images[8];
     Image ui[5];
     SDL_Renderer* ren;
+    Images();
     Images(SDL_Renderer* ren);
     ~Images();
     void load_images();

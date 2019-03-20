@@ -2,7 +2,6 @@
 #define MAP_HPP
 
 #include <iostream>
-
 class Map
 {
 private:

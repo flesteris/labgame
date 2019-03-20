@@ -4,6 +4,8 @@
 #include "images.hpp"
 #include "map.hpp"
 #include "game.hpp"
+class Game;
+class Images;
 
 class Hero
 {
@@ -19,7 +21,7 @@ public:
     Hero(int x, int y, int max_movement_points);
     ~Hero();
 
-    int move(Images &images, SDL_Renderer* ren, Rect &hero_drect, Map &map);
+    int move(Game &game);
 
 // Seteriai ir geteriai ////////////////////////////////////////////////////////
     void set_m_direction(int a) {m_direction = a;}
@@ -38,9 +40,9 @@ public:
     int get_current_movement_points() {return m_current_movement_points;}
 ////////////////////////////////////////////////////////////////////////////////
 
-    friend void draw_land(int x, int y, Map &map, Images &images, SDL_Renderer* ren);
+    friend void draw_land(Game &game);
 };
 
-void draw_land(int x, int y, Map &map, Images &images, SDL_Renderer* ren);
+void draw_land(Game &game);
 
 #endif //HERO_HPP
