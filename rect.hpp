@@ -13,7 +13,6 @@ public:
     Rect(int upper_left_x, int upper_left_y, int width, int height);
     SDL_Rect to_sdl_rect() const;
     bool is_empty() const;
-    ~Rect();
 };
 
 #endif

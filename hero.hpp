@@ -1,11 +1,9 @@
 #ifndef HERO_HPP
 #define HERO_HPP
-#include "image.hpp"
-#include "images.hpp"
-#include "map.hpp"
+
 #include "game.hpp"
+
 class Game;
-class Images;
 
 class Hero
 {
@@ -17,15 +15,16 @@ private:
     int m_current_movement_points; // starts at max each turn
 
 public:
-    Hero();
-    Hero(int x, int y, int max_movement_points);
+    Game* game;
+    Hero(Game* game);
+    Hero(Game* game, int x, int y, int max_movement_points);
     ~Hero();
 
-    int move(Game &game);
+    int move();
 
 // Seteriai ir geteriai ////////////////////////////////////////////////////////
-    void set_m_direction(int a) {m_direction = a;}
-    int get_m_direction() {return m_direction;}
+    void set_direction(int a) {m_direction = a;}
+    int get_direction() {return m_direction;}
 
     void set_x(int a) {m_x = a;}
     int get_x() {return m_x;}

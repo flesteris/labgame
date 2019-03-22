@@ -2,14 +2,14 @@
 #define GAME_HPP
 
 #include <vector>
-#include "instance.hpp"
+#include <iostream>
+#include "window.hpp"
 #include "images.hpp"
 #include "hero.hpp"
 #include "map.hpp"
-#include "date.hpp"
+#include "game_time.hpp"
 
 class Hero;
-class Instance;
 class Images;
 
 class Game
@@ -25,15 +25,16 @@ public:
     bool destination_present = false;
 
     std::vector<Hero*> heroes;
-    SDL_Window* win;
-    SDL_Renderer* ren;
     Map map;
-    Instance* instance;
+    Window* window;
     Images* images;
-    Date date;
+    GameTime game_time;
 
     Game();
     ~Game();
+
+    void set_options();
+    void load_map();
 };
 
 #endif

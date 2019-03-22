@@ -4,19 +4,21 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "rect.hpp"
+#include "game.hpp"
 
-// Klase realizuojanti teksturos funkcionaluma
+class Game;
+
 class Image
 {
 private:
     SDL_Texture* texture;
 
 public:
-    //SDL_Renderer* ren;
-    Image();
+    Game* game;
+    Image(Game* game);
     ~Image();
-    void draw(SDL_Renderer* ren, const Rect& srect, const Rect& drect);
-    void loadBMP(SDL_Renderer* ren, const std::string filename);
+    void draw(const Rect& srect, const Rect& drect);
+    void loadBMP(const std::string filename);
 };
 
 #endif

@@ -1,12 +1,11 @@
 #include "hero.hpp"
-#include "rect.hpp"
 
-Hero::Hero() : m_x(9), m_y(9), m_max_movement_points(10), m_current_movement_points(10), m_direction(NO_DIRECTION)
+Hero::Hero(Game* game) : m_x(0), m_y(0), m_max_movement_points(10), m_current_movement_points(10), m_direction(NO_DIRECTION)
 {
 
 }
 
-Hero::Hero(int x, int y, int max_movement_points) : m_x(x), m_y(y), m_max_movement_points(max_movement_points), m_current_movement_points(max_movement_points), m_direction(NO_DIRECTION)
+Hero::Hero(Game* game, int x, int y, int max_movement_points) : m_x(x), m_y(y), m_max_movement_points(max_movement_points), m_current_movement_points(max_movement_points), m_direction(NO_DIRECTION)
 {
 
 }
@@ -15,7 +14,8 @@ Hero::~Hero()
 {
 
 }
-int Hero::move(Game &game)
+
+int Hero::move()
 {
     if(m_current_movement_points == 0)
     {
@@ -107,8 +107,8 @@ int Hero::move(Game &game)
     }
 
     m_current_movement_points--;
-    draw_land(game);
-    game.images->hero_images[m_direction].draw(game.ren, Rect(), game.hero_drect);
+    //draw_land(game);
+    //game->images->hero_images[m_direction]->draw(game->ren, Rect(), game->hero_drect);
     m_direction = NO_DIRECTION;
     return 1;
 }
@@ -123,7 +123,7 @@ void draw_land(Game &game)
             for(int j = game.heroes[0]->get_y() - 8, l = 0; j < game.heroes[0]->get_y() + 9; j++, l++)
             {
                 tile_drect = {k*40 + 20, l*40, 40, 40};
-                game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
+                game.images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
             }
         }
         else
@@ -133,12 +133,12 @@ void draw_land(Game &game)
                 if(j < 0 || j > 71)
                 {
                     tile_drect = {k*40 + 20, l*40, 40, 40};
-                    game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
+                    game.images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
                 }
                 else
                 {
                     tile_drect = {k*40 + 20, l*40, 40, 40};
-                    game.images->tiles[game.map.tiles[i][j] - 1].draw(game.ren, Rect(), tile_drect);
+                    game.images->tiles[game.map.tiles[i][j] - 1]->draw(Rect(), tile_drect);
                 }
             }
         }
@@ -152,7 +152,7 @@ void draw_land(Game &game)
             {
                 tile_srect = {20, 0, 20, 40};
                 tile_drect = {0*40, l*40, 20, 40};
-                game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
+                game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
             }
         }
         else
@@ -163,13 +163,13 @@ void draw_land(Game &game)
                 {
                     tile_srect = {20, 0, 20, 40};
                     tile_drect = {0*40, l*40, 20, 40};
-                    game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
+                    game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
                 }
                 else
                 {
                     tile_srect = {20, 0, 20, 40};
                     tile_drect = {0*40, l*40, 20, 40};
-                    game.images->tiles[game.map.tiles[i][j] - 1].draw(game.ren, Rect(), tile_drect);
+                    game.images->tiles[game.map.tiles[i][j] - 1]->draw(tile_srect, tile_drect);
                 }
             }
         }
@@ -183,7 +183,7 @@ void draw_land(Game &game)
             {
                 tile_srect = {0, 0, 20, 40};
                 tile_drect = {24*40 - 20, l*40, 20, 40};
-                game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
+                game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
             }
         }
         else
@@ -194,13 +194,13 @@ void draw_land(Game &game)
                 {
                     tile_srect = {0, 0, 20, 40};
                     tile_drect = {24*40 - 20, l*40, 20, 40};
-                    game.images->tiles[OFF_MAP_TILE].draw(game.ren, Rect(), tile_drect);
+                    game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
                 }
                 else
                 {
                     tile_srect = {0, 0, 20, 40};
                     tile_drect = {24*40 - 20, l*40, 20, 40};
-                    game.images->tiles[game.map.tiles[i][j] - 1].draw(game.ren, Rect(), tile_drect);
+                    game.images->tiles[game.map.tiles[i][j] - 1]->draw(tile_srect, tile_drect);
                 }
             }
         }

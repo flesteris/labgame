@@ -21,8 +21,3 @@ bool Rect::is_empty() const
 {
     return w == 0 && h == 0;
 }
-
-Rect::~Rect()
-{
-
-}
