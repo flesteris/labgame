@@ -6,6 +6,7 @@ Game::Game()
     set_options();
     window = new Window();
     images = new Images(this);
+    SDL_RaiseWindow(window->win);
 }
 
 Game::~Game()
@@ -40,95 +41,175 @@ void Game::set_options()
     }
 }
 
-
-void draw_land(Game &game)
+void Game::get_input()
 {
-    Rect tile_drect, tile_srect;
-    for(int i = game.heroes[0]->get_pos_x() - 11, k = 0; i < game.heroes[0]->get_pos_x() + 12; i++, k++)
+    if(SDL_PollEvent(&event))
     {
-        if(i < 0 || i > game.map.h)
+        if(event.type == SDL_QUIT)
         {
-            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
-            {
-                tile_drect = {Pos(k*40 + 20, l*40), 40, 40};
-                game.images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
-            }
+            quit = true;
         }
-        else
+        else if(event.type == SDL_KEYDOWN)
         {
-            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            switch(event.key.keysym.sym)
             {
-                if(j < 0 || j > game.map.w)
+                case SDLK_q:
                 {
-                    tile_drect = {Pos(k*40 + 20, l*40), 40, 40};
-                    game.images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
+                    quit = true;
+                    break;
                 }
-                else
+                case SDLK_e:
                 {
-                    tile_drect = {Pos(k*40 + 20, l*40), 40, 40};
-                    game.images->tiles[game.map.tiles[i+j*game.map.w] - 1]->draw(Rect(), tile_drect);
+                    heroes[0]->set_current_movement_points(heroes[0]->get_max_movement_points());
+
+                    if(destination_present)
+                    {
+                        images->ui[DESTINATION]->draw(Rect(), out_of_movement_points_drect);
+                        SDL_RenderPresent(window->ren);
+                        destination_present = false;
+                    }
+                    game_time.next_day();
+                    //std::string day_s = IntToString(day);
+                    break;
+                }
+                case SDLK_KP_1:
+                {
+                    heroes[0]->set_direction(SOUTHWEST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_KP_2:
+                {
+                    heroes[0]->set_direction(SOUTH);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_DOWN:
+                {
+                    heroes[0]->set_direction(SOUTH);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_KP_3:
+                {
+                    heroes[0]->set_direction(SOUTHEAST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_KP_4:
+                {
+                    heroes[0]->set_direction(WEST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_LEFT:
+                {
+                    heroes[0]->set_direction(WEST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_KP_6:
+                {
+                    heroes[0]->set_direction(EAST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_RIGHT:
+                {
+                    heroes[0]->set_direction(EAST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_KP_7:
+                {
+                    heroes[0]->set_direction(NORTHWEST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_KP_8:
+                {
+                    heroes[0]->set_direction(NORTH);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_UP:
+                {
+                    heroes[0]->set_direction(NORTH);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                case SDLK_KP_9:
+                {
+                    heroes[0]->set_direction(NORTHEAST);
+                    heroes[0]->move_triggered = true;
+                    break;
+                }
+                default:
+                {
+                    break;
                 }
             }
         }
     }
+}
 
-    for(int i = game.heroes[0]->get_pos_x() - 12, k = 0; k < 1; i++, k++)
+void Game::update()
+{
+
+}
+
+void Game::draw()
+{
+    draw_land(this);
+    images->ui[RIGHT_PANEL]->draw(Rect(), right_panel_drect);
+    images->ui[BOTTOM_BAR]->draw(Rect(), bottom_bar_drect);
+    images->ui[HOURGLASS]->draw(Rect(), hourglass_drect);
+    images->hero_images[heroes[0]->get_direction()]->draw(Rect(), hero_drect);
+    if(heroes[0]->move_triggered)
     {
-        if(i < 0)
+        heroes[0]->move();
+        heroes[0]->move_triggered = false;
+        /*if(heroes[0]->move())
         {
-            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
-            {
-                tile_srect = {Pos(20, 0), 20, 40};
-                tile_drect = {Pos(0*40, l*40), 20, 40};
-                game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
-            }
+            destination_present = false;
         }
         else
         {
-            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
-            {
-                if(j < 0 || j > game.map.w)
-                {
-                    tile_srect = {Pos(20, 0), 20, 40};
-                    tile_drect = {Pos(0*40, l*40), 20, 40};
-                    game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
-                }
-                else
-                {
-                    tile_srect = {Pos(20, 0), 20, 40};
-                    tile_drect = {Pos(0*40, l*40), 20, 40};
-                    game.images->tiles[game.map.tiles[i+j*game.map.w] - 1]->draw(tile_srect, tile_drect);
-                }
-            }
-        }
+            out_of_movement_points_drect = {Pos(470, 330), 20, 20};
+            images->ui[NO_MOVEMENT_POINTS]->draw(Rect(), out_of_movement_points_drect);
+            destination_present = true;
+        }*/
     }
 
-    for(int i = game.heroes[0]->get_pos_x() + 12, k = 0; k < 1; i++, k++)
+    SDL_RenderPresent(window->ren);
+}
+
+void draw_land(Game* game)
+{
+    Rect tile_drect;
+    for(int i = game->heroes[0]->get_pos_x() - 12, k = -1; i < game->heroes[0]->get_pos_x() + 13; i++, k++)
     {
-        if(i > game.map.h)
+        if(i < 0 || i > game->map.h - 1)
         {
-            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            for(int j = game->heroes[0]->get_pos_y() - 8, l = 0; j < game->heroes[0]->get_pos_y() + 9; j++, l++)
             {
-                tile_srect = {Pos(0, 0), 20, 40};
-                tile_drect = {Pos(24*40 - 20, l*40), 20, 40};
-                game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
+                tile_drect = {Pos(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT), TILE_WIDTH, TILE_HEIGHT};
+                game->images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
             }
         }
         else
         {
-            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            for(int j = game->heroes[0]->get_pos_y() - 8, l = 0; j < game->heroes[0]->get_pos_y() + 9; j++, l++)
             {
-                if(j < 0 || j > game.map.w)
+                if(j < 0 || j > game->map.w - 1)
                 {
-                    tile_srect = {Pos(0, 0), 20, 40};
-                    tile_drect = {Pos(24*40 - 20, l*40), 20, 40};
-                    game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
+                    tile_drect = {Pos(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT), TILE_WIDTH, TILE_HEIGHT};
+                    game->images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
                 }
                 else
                 {
-                    tile_srect = {Pos(0, 0), 20, 40};
-                    tile_drect = {Pos(24*40 - 20, l*40), 20, 40};
-                    game.images->tiles[game.map.tiles[i+j*game.map.w] - 1]->draw(tile_srect, tile_drect);
+                    tile_drect = {Pos(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT), TILE_WIDTH, TILE_HEIGHT};
+                    game->images->tiles[game->map.tiles[i+j*game->map.w] - 1]->draw(Rect(), tile_drect);
                 }
             }
         }

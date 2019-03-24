@@ -30,7 +30,6 @@ enum HeroDirection
     NORTHWEST = 6,
     WEST = 7,
     HERO_IMAGE_COUNT = 8,
-    NO_DIRECTION = 8
 };
 
 enum UI
@@ -41,6 +40,14 @@ enum UI
     NO_MOVEMENT_POINTS = 3,
     DESTINATION = 4,
     UI_IMAGE_COUNT = 5
+};
+
+enum SIZES
+{
+    TILE_WIDTH = 40,
+    TILE_HEIGHT = 40,
+    WINDOW_WIDTH_TILE_FIT = 24,
+    WINDOW_HEIGTH_TILE_FIT = 17
 };
 
 class Game;

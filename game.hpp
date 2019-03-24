@@ -18,6 +18,9 @@ class Game
 private:
 
 public:
+    bool quit = false;
+    SDL_Event event;
+
     Rect hero_drect = {Pos(460, 320), 40, 40};
     Rect right_panel_drect = {Pos(960, 0), 320, 680};
     Rect bottom_bar_drect = {Pos(0, 680), 1280, 40};
@@ -35,9 +38,12 @@ public:
     ~Game();
 
     void set_options();
-    friend void draw_land(Game &game);
+    void get_input();
+    void update();
+    void draw();
+    friend void draw_land(Game* game);
 };
 
-void draw_land(Game &game);
+void draw_land(Game* game);
 
 #endif

@@ -1,11 +1,11 @@
 #include "hero.hpp"
 
-Hero::Hero(Game* game) : game(game), m_pos(0, 0), m_max_movement_points(10), m_current_movement_points(10), m_direction(NO_DIRECTION)
+Hero::Hero(Game* game) : game(game), m_pos(0, 0), m_max_movement_points(10), m_current_movement_points(10), m_direction(EAST)
 {
 
 }
 
-Hero::Hero(Game* game, Pos &pos, int max_movement_points) : game(game), m_pos(pos), m_max_movement_points(max_movement_points), m_current_movement_points(max_movement_points), m_direction(NO_DIRECTION)
+Hero::Hero(Game* game, Pos &pos, int max_movement_points) : game(game), m_pos(pos), m_max_movement_points(max_movement_points), m_current_movement_points(max_movement_points), m_direction(EAST)
 {
 
 }

@@ -14,6 +14,7 @@ private:
     int m_current_movement_points; // starts at max each turn
 
 public:
+    bool move_triggered = false;
     Game* game;
     Hero(Game* game);
     Hero(Game* game, Pos &pos, int max_movement_points);
