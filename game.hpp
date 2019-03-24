@@ -41,7 +41,7 @@ public:
     void get_input();
     void update();
     void draw();
-    friend void draw_land(Game* game);
+
 };
 
 void draw_land(Game* game);

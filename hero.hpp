@@ -58,6 +58,8 @@ public:
     void set_current_movement_points(int a) {m_current_movement_points = a;}
     int get_current_movement_points() {return m_current_movement_points;}
 ////////////////////////////////////////////////////////////////////////////////
+
+    friend void draw_land(Game* game);
 };
 
 #endif //HERO_HPP

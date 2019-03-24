@@ -187,23 +187,23 @@ void Game::draw()
 void draw_land(Game* game)
 {
     Rect tile_drect;
-    for(int i = game->heroes[0]->get_pos_x() - 12, k = -1; i < game->heroes[0]->get_pos_x() + 13; i++, k++)
+    for(int i = game->heroes[0]->m_pos.x - 12, k = -1; i < game->heroes[0]->m_pos.x + 13; i++, k++)
     {
         if(i < 0 || i > game->map.h - 1)
         {
-            for(int j = game->heroes[0]->get_pos_y() - 8, l = 0; j < game->heroes[0]->get_pos_y() + 9; j++, l++)
+            for(int j = game->heroes[0]->m_pos.y - 8, l = 0; j < game->heroes[0]->m_pos.y + 9; j++, l++)
             {
-                tile_drect = {Pos(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT), TILE_WIDTH, TILE_HEIGHT};
+                tile_drect = {k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT};
                 game->images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
             }
         }
         else
         {
-            for(int j = game->heroes[0]->get_pos_y() - 8, l = 0; j < game->heroes[0]->get_pos_y() + 9; j++, l++)
+            for(int j = game->heroes[0]->m_pos.y - 8, l = 0; j < game->heroes[0]->m_pos.y + 9; j++, l++)
             {
                 if(j < 0 || j > game->map.w - 1)
                 {
-                    tile_drect = {Pos(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT), TILE_WIDTH, TILE_HEIGHT};
+                    tile_drect = {k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT};
                     game->images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
                 }
                 else
