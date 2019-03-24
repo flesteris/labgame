@@ -1,5 +1,4 @@
 #include "window.hpp"
-#include <iostream>
 
 Window::Window()
 {

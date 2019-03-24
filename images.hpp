@@ -1,7 +1,6 @@
 #ifndef IMAGES_HPP
 #define IMAGES_HPP
 
-#include <iostream>
 #include <SDL2/SDL.h>
 #include <vector>
 #include "image.hpp"
@@ -17,19 +16,6 @@ enum TileType
     GRASS_TILE_6 = 5,
     OFF_MAP_TILE = 6,
     TILE_IMAGE_COUNT = 7
-};
-
-enum HeroDirection
-{
-    SOUTHWEST = 0,
-    SOUTH = 1,
-    SOUTHEAST = 2,
-    EAST = 3,
-    NORTHEAST = 4,
-    NORTH = 5,
-    NORTHWEST = 6,
-    WEST = 7,
-    HERO_IMAGE_COUNT = 8,
 };
 
 enum UI

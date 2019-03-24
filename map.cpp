@@ -1,5 +1,4 @@
 #include "map.hpp"
-#include <fstream>
 
 Map::Map() : w(0), h(0)
 {

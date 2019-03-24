@@ -1,6 +1,8 @@
 #ifndef GAME_TIME_HPP
 #define GAME_TIME_HPP
 
+#include <iostream>
+
 class GameTime
 {
 private:

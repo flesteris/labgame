@@ -1,5 +1,4 @@
 #include "image.hpp"
-#include "rect.hpp"
 
 Image::Image(Game* game) : game(game), texture(nullptr)
 {

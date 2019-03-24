@@ -1,5 +1,4 @@
 #include "game_time.hpp"
-#include <iostream>
 
 GameTime::GameTime() : day(1), week(1), month(1)
 {

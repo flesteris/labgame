@@ -1,12 +1,21 @@
 #include "rect.hpp"
-#include <SDL2/SDL.h>
 
 Rect::Rect() : pos(0, 0), w(0), h(0)
 {
 
 }
 
+Rect::Rect(Pos upper_left_point, Pos lower_right_point) : pos(upper_left_point), w(lower_right_point.x - upper_left_point.x), h(lower_right_point.y - upper_left_point.y)
+{
+
+}
+
 Rect::Rect(Pos upper_left_point, int width, int height) : pos(upper_left_point), w(width), h(height)
+{
+
+}
+
+Rect::Rect(int upper_left_x, int upper_left_y, int width, int height) : pos(upper_left_x, upper_left_y), w(width), h(height)
 {
 
 }

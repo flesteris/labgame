@@ -2,6 +2,23 @@
 #define HERO_HPP
 
 #include "game.hpp"
+#include "pos.hpp"
+
+extern const Pos DIRECTIONS[9];
+
+enum HeroDirection
+{
+    SOUTHWEST = 0,
+    SOUTH = 1,
+    SOUTHEAST = 2,
+    EAST = 3,
+    NORTHEAST = 4,
+    NORTH = 5,
+    NORTHWEST = 6,
+    WEST = 7,
+    NO_DIRECTION = 8,
+    HERO_IMAGE_COUNT = 8
+};
 
 class Game;
 

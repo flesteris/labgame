@@ -1,5 +1,7 @@
 #include "hero.hpp"
 
+const Pos DIRECTIONS[] = {Pos(-1, 1), Pos(0, 1), Pos(1, 1), Pos(1, 0), Pos(1, -1), Pos(0, -1), Pos(-1, -1), Pos(-1, 0), Pos(0, 0)};
+
 Hero::Hero(Game* game) : game(game), m_pos(0, 0), m_max_movement_points(10), m_current_movement_points(10), m_direction(EAST)
 {
 
@@ -17,93 +19,17 @@ Hero::~Hero()
 
 int Hero::move()
 {
-    if(m_current_movement_points == 0)
+    if(m_current_movement_points <= 0)
     {
         return 0;
     }
-    switch(m_direction)
+    Pos pos = m_pos + DIRECTIONS[m_direction];
+
+    if(pos.is_in_rect(0, 0, game->map.w - 1, game->map.h - 1))
     {
-    case SOUTHWEST:
-        {
-            if(m_pos.x == 0 || m_pos.y == game->map.h - 1)
-            {
-                return -1;
-            }
-            m_pos.x -= 1;
-            m_pos.y += 1;
-            break;
-        }
-    case SOUTH:
-        {
-            if(m_pos.y == game->map.h - 1)
-            {
-                return -1;
-            }
-            m_pos.y += 1;
-            break;
-        }
-    case SOUTHEAST:
-        {
-            if(m_pos.x == game->map.w - 1 || m_pos.y == game->map.h - 1)
-            {
-                return -1;
-            }
-            m_pos.x += 1;
-            m_pos.y += 1;
-            break;
-        }
-    case EAST:
-        {
-            if(m_pos.x == game->map.w - 1)
-            {
-                return -1;
-            }
-            m_pos.x += 1;
-            break;
-        }
-    case NORTHEAST:
-        {
-            if(m_pos.x == game->map.w - 1 || m_pos.y == 0)
-            {
-                return -1;
-            }
-            m_pos.x += 1;
-            m_pos.y -= 1;
-            break;
-        }
-    case NORTH:
-        {
-            if(m_pos.y == 0)
-            {
-                return -1;
-            }
-            m_pos.y -= 1;
-            break;
-        }
-    case NORTHWEST:
-        {
-            if(m_pos.y == 0 || m_pos.x == 0)
-            {
-                return -1;
-            }
-            m_pos.x -= 1;
-            m_pos.y -= 1;
-            break;
-        }
-    case WEST:
-        {
-            if(m_pos.x == 0)
-            {
-                return -1;
-            }
-            m_pos.x -= 1;
-            break;
-        }
-    default:
-        {
-            break;
-        }
+        m_pos = pos;
+        m_current_movement_points--;
+        return 1;
     }
-    m_current_movement_points--;
-    return 1;
+    return -1;
 }
