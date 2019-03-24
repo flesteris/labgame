@@ -2,16 +2,17 @@
 #define MAP_HPP
 
 #include <iostream>
+#include <vector>
 
 class Map
 {
 private:
 
 public:
-    //int w;
-    //int h;
+    int w;
+    int h;
+    std::vector<int> tiles;
 
-    int tiles[72][72];
     Map();
     ~Map();
     int load_map_data(const std::string& filename);

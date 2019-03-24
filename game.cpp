@@ -2,10 +2,10 @@
 
 Game::Game()
 {
+    map.load_map_data("maps//map_1_data.txt");
     set_options();
     window = new Window();
     images = new Images(this);
-    load_map();
 }
 
 Game::~Game()
@@ -17,11 +17,11 @@ Game::~Game()
 
 void Game::set_options()
 {
-    int x, y;
+    Pos pos;
 
-    std::cout << "Enter starting coordinates(0-71 0-71): ";
-    std::cin >> x >> y;
-    if(x < 0 || x > 71 || y < 0 || y > 71)
+    std::cout << "Enter starting coordinates(0-" << map.w - 1 << " 0-" << map.h - 1 << "): ";
+    std::cin >> pos.x >> pos.y;
+    if(pos.x < 0 || pos.x > map.w - 1 || pos.y < 0 || pos.y > map.h - 1)
     {
         std::cout << "Incorrect coordinates. Loading default coordinates." << std::endl;
         heroes.push_back(new Hero(this));
@@ -34,21 +34,103 @@ void Game::set_options()
         if(max_movement_points < 1 || max_movement_points > 50)
         {
             std::cout << "Incorrect hero's max movement points. Loading default movement points(10)." << std::endl;
-            heroes.push_back(new Hero(this, x, y, 10));
+            heroes.push_back(new Hero(this, pos, 10));
         }
-        heroes.push_back(new Hero(this, x, y, max_movement_points));
+        heroes.push_back(new Hero(this, pos, max_movement_points));
     }
 }
 
-void Game::load_map()
+
+void draw_land(Game &game)
 {
-    if (!map.load_map_data("maps//map_1_data.txt"))
+    Rect tile_drect, tile_srect;
+    for(int i = game.heroes[0]->get_pos_x() - 11, k = 0; i < game.heroes[0]->get_pos_x() + 12; i++, k++)
     {
-        std::cout << "Failed to load map data!  ..."<< std::endl;
-        for (int i = 0; i < (int)heroes.size(); i++)
+        if(i < 0 || i > game.map.h)
         {
-            delete heroes[i];
+            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            {
+                tile_drect = {Pos(k*40 + 20, l*40), 40, 40};
+                game.images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
+            }
         }
-        heroes.clear();
+        else
+        {
+            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            {
+                if(j < 0 || j > game.map.w)
+                {
+                    tile_drect = {Pos(k*40 + 20, l*40), 40, 40};
+                    game.images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
+                }
+                else
+                {
+                    tile_drect = {Pos(k*40 + 20, l*40), 40, 40};
+                    game.images->tiles[game.map.tiles[i+j*game.map.w] - 1]->draw(Rect(), tile_drect);
+                }
+            }
+        }
+    }
+
+    for(int i = game.heroes[0]->get_pos_x() - 12, k = 0; k < 1; i++, k++)
+    {
+        if(i < 0)
+        {
+            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            {
+                tile_srect = {Pos(20, 0), 20, 40};
+                tile_drect = {Pos(0*40, l*40), 20, 40};
+                game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
+            }
+        }
+        else
+        {
+            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            {
+                if(j < 0 || j > game.map.w)
+                {
+                    tile_srect = {Pos(20, 0), 20, 40};
+                    tile_drect = {Pos(0*40, l*40), 20, 40};
+                    game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
+                }
+                else
+                {
+                    tile_srect = {Pos(20, 0), 20, 40};
+                    tile_drect = {Pos(0*40, l*40), 20, 40};
+                    game.images->tiles[game.map.tiles[i+j*game.map.w] - 1]->draw(tile_srect, tile_drect);
+                }
+            }
+        }
+    }
+
+    for(int i = game.heroes[0]->get_pos_x() + 12, k = 0; k < 1; i++, k++)
+    {
+        if(i > game.map.h)
+        {
+            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            {
+                tile_srect = {Pos(0, 0), 20, 40};
+                tile_drect = {Pos(24*40 - 20, l*40), 20, 40};
+                game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
+            }
+        }
+        else
+        {
+            for(int j = game.heroes[0]->get_pos_y() - 8, l = 0; j < game.heroes[0]->get_pos_y() + 9; j++, l++)
+            {
+                if(j < 0 || j > game.map.w)
+                {
+                    tile_srect = {Pos(0, 0), 20, 40};
+                    tile_drect = {Pos(24*40 - 20, l*40), 20, 40};
+                    game.images->tiles[OFF_MAP_TILE]->draw(tile_srect, tile_drect);
+                }
+                else
+                {
+                    tile_srect = {Pos(0, 0), 20, 40};
+                    tile_drect = {Pos(24*40 - 20, l*40), 20, 40};
+                    game.images->tiles[game.map.tiles[i+j*game.map.w] - 1]->draw(tile_srect, tile_drect);
+                }
+            }
+        }
     }
 }

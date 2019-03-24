@@ -1,7 +1,7 @@
 #include "map.hpp"
 #include <fstream>
 
-Map::Map()
+Map::Map() : w(0), h(0)
 {
 
 }
@@ -17,13 +17,15 @@ int Map::load_map_data(const std::string& filename)
 
     if(map_data.is_open())
     {
-        /*map_data >> w;
-        map_data >> h;*/
-        for(int i = 0; i < 72; i++)
+        int x;
+        map_data >> w;
+        map_data >> h;
+        for(int i = 0; i < h; i++)
         {
-            for(int j = 0; j < 72; j++)
+            for(int j = 0; j < w; j++)
             {
-                map_data >> tiles[j][i];
+                map_data >> x;
+                tiles.push_back(x);
             }
         }
         map_data.close();

@@ -14,6 +14,7 @@
 #include "game.hpp"
 #include "window.hpp"
 #include "game_time.hpp"
+#include "pos.hpp"
 
 int main(int argc, char** argv)
 {
@@ -140,13 +141,16 @@ int main(int argc, char** argv)
         {
             if(game.heroes[0]->move())
             {
+                draw_land(game);
+                game.images->hero_images[game.heroes[0]->get_direction()]->draw(Rect(), game.hero_drect);
                 game.destination_present = false;
+                game.heroes[0]->set_direction(NO_DIRECTION);
             }
             else
             {
                 draw_land(game);
                 game.images->hero_images[game.heroes[0]->get_direction()]->draw(Rect(), game.hero_drect);
-                game.out_of_movement_points_drect = {470, 330, 20, 20};
+                game.out_of_movement_points_drect = {Pos(470, 330), 20, 20};
                 game.images->ui[NO_MOVEMENT_POINTS]->draw(Rect(), game.out_of_movement_points_drect);
                 game.destination_present = true;
                 game.heroes[0]->set_direction(NO_DIRECTION);

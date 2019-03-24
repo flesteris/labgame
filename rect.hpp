@@ -2,15 +2,17 @@
 #define RECT_HPP
 
 #include <SDL2/SDL.h>
+#include "pos.hpp"
 
 class Rect
 {
 private:
 
 public:
-    int x, y, w, h;
+    Pos pos;
+    int w, h;
     Rect();
-    Rect(int upper_left_x, int upper_left_y, int width, int height);
+    Rect(Pos upper_left_point, int width, int height);
     SDL_Rect to_sdl_rect() const;
     bool is_empty() const;
 };
