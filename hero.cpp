@@ -28,8 +28,9 @@ int Hero::move()
     if(pos.is_in_rect(0, 0, game->map.w - 1, game->map.h - 1))
     {
         m_pos = pos;
+        game->center_pos_m = pos;
         m_current_movement_points--;
         return 1;
     }
-    return -1;
+    return 0;
 }

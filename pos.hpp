@@ -1,6 +1,10 @@
 #ifndef POS_HPP
 #define POS_HPP
 
+#include "rect.hpp"
+
+class Rect;
+
 class Pos
 {
 private:
@@ -11,13 +15,12 @@ public:
 
     Pos();
     Pos(int x, int y);
-    Pos operator +(const Pos& other) const
-    {
-        Pos pos;
-        pos.x = this->x + other.x;
-        pos.y = this->y + other.y;
-        return pos;
-    }
+    Pos operator +(const Pos &other) const;
+    Pos operator -(const Pos &other) const;
+    Pos operator *(const int &other) const;
+    bool operator ==(const Pos &other) const;
+    bool operator !=(const Pos &other) const;
+    bool is_in_rect(Rect &rect);
     bool is_in_rect(int uper_left_x, int uper_left_y, int w, int h);
 };
 

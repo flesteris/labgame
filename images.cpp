@@ -47,6 +47,8 @@ void Images::load_images()
     ui[RIGHT_PANEL]->loadBMP("images//right_panel.bmp");
     ui[BOTTOM_BAR]->loadBMP("images//bottom_bar.bmp");
     ui[HOURGLASS]->loadBMP("images//hourglass.bmp");
+    ui[HOURGLASS_PRESSED]->loadBMP("images//hourglass_pressed.bmp");
     ui[NO_MOVEMENT_POINTS]->loadBMP("images//out_of_movement_points.bmp");
     ui[DESTINATION]->loadBMP("images//destination.bmp");
+    ui[DESTINATION_DOT]->loadBMP("images//destination_dot.bmp");
 }
