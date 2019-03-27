@@ -5,17 +5,22 @@ Pos::Pos() : x(0), y(0)
 
 }
 
+Pos::Pos(const Pos &pos) : x(pos.x), y(pos.y)
+{
+
+}
+
 Pos::Pos(int x, int y) : x(x), y(y)
 {
 
 }
 
-Pos Pos:: operator +(const Pos& other) const
+Pos Pos:: operator +(const Pos &other) const
 {
     return Pos(x + other.x, y + other.y);
 }
 
-Pos Pos:: operator -(const Pos& other) const
+Pos Pos:: operator -(const Pos &other) const
 {
     return Pos(x - other.x, y - other.y);
 }
@@ -25,12 +30,12 @@ Pos Pos:: operator *(const int &other) const
     return Pos(x * other, y * other);
 }
 
-bool Pos:: operator ==(const Pos& other) const
+bool Pos:: operator ==(const Pos &other) const
 {
     return x == other.x && y == other.y;
 }
 
-bool Pos:: operator !=(const Pos& other) const
+bool Pos:: operator !=(const Pos &other) const
 {
     return x != other.x || y != other.y;
 }
@@ -53,4 +58,8 @@ bool Pos::is_in_rect(int uper_left_x, int uper_left_y, int w, int h)
     return true;
 }
 
+void Pos::print_coordinates() /// Just a test helper
+{
+    std::cout << "x: " << x << ", y: " << y << "." << std::endl;
+}
 

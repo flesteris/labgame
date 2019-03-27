@@ -26,13 +26,17 @@ class Hero
 {
 private:
     int m_direction;
-    Pos m_pos;
     int m_max_movement_points;
     int m_current_movement_points; // starts at max each turn
+    Game* game;
 
 public:
-    bool move_triggered = false;
-    Game* game;
+    bool hero_moving = false;
+    bool destination_present = false;
+    bool out_of_movement_points = false;
+
+    Pos m_pos;
+
     Hero(Game* game);
     Hero(Game* game, Pos &pos, int max_movement_points);
     ~Hero();

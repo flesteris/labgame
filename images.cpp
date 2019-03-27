@@ -50,5 +50,7 @@ void Images::load_images()
     ui[HOURGLASS_PRESSED]->loadBMP("images//hourglass_pressed.bmp");
     ui[NO_MOVEMENT_POINTS]->loadBMP("images//out_of_movement_points.bmp");
     ui[DESTINATION]->loadBMP("images//destination.bmp");
+    ui[DESTINATION_EMPTY]->loadBMP("images//destination_empty.bmp");
     ui[DESTINATION_DOT]->loadBMP("images//destination_dot.bmp");
+    ui[DESTINATION_DOT_EMPTY]->loadBMP("images//destination_dot_empty.bmp");
 }
