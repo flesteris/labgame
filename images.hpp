@@ -25,19 +25,11 @@ enum UI
     HOURGLASS = 2,
     HOURGLASS_PRESSED = 3,
     NO_MOVEMENT_POINTS = 4,
-    DESTINATION = 5,
-    DESTINATION_EMPTY = 6,
+    DESTINATION_MARK = 5,
+    DESTINATION_MARK_EMPTY = 6,
     DESTINATION_DOT = 7,
     DESTINATION_DOT_EMPTY = 8,
     UI_IMAGE_COUNT = 9
-};
-
-enum SIZES
-{
-    TILE_WIDTH = 40,
-    TILE_HEIGHT = 40,
-    WINDOW_WIDTH_TILE_FIT = 24,
-    WINDOW_HEIGTH_TILE_FIT = 17
 };
 
 class Game;
@@ -46,9 +38,9 @@ class Image;
 class Images
 {
 private:
+    Game* game;
 
 public:
-    Game* game;
     std::vector<Image*> tiles;
     std::vector<Image*> hero_images;
     std::vector<Image*> ui;

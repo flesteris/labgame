@@ -12,9 +12,9 @@ class Image
 {
 private:
     SDL_Texture* texture;
+    Game* game;
 
 public:
-    Game* game;
     Image(Game* game);
     ~Image();
     void draw(const Rect& srect, const Rect& drect);

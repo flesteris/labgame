@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 
     Game game;
 
-    while(!game.quit)
+    while(!game.b_quit)
     {
         game.get_input();
         game.update();
@@ -27,3 +27,6 @@ int main(int argc, char** argv)
     SDL_Quit();
     return 0;
 }
+
+/// Norisi scrollinimo greiti reguliuoti arba suletinti
+/// 'minor' - Piesiama ryskiai uz ribu (manrods) - veliau tvarkyt

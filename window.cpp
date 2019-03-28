@@ -13,7 +13,7 @@ Window::~Window()
 
 void Window::create_window()
 {
-    win = SDL_CreateWindow("Spicy boi", 320, 180, 1280, 720, SDL_WINDOW_SHOWN);
+    win = SDL_CreateWindow("Spicy boi", 320, 180, WINDOW_WIDTH, WINDOW_HEIGTH, SDL_WINDOW_SHOWN);
     if (win == nullptr)
     {
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;

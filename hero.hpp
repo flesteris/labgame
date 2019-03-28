@@ -17,6 +17,7 @@ enum HeroDirection
     NORTHWEST = 6,
     WEST = 7,
     NO_DIRECTION = 8,
+    DIRECTION_COUNT = 8,
     HERO_IMAGE_COUNT = 8
 };
 
@@ -31,11 +32,27 @@ private:
     Game* game;
 
 public:
-    bool hero_moving = false;
-    bool destination_present = false;
-    bool out_of_movement_points = false;
+////Flags///////////////////////////////////////////
+    bool b_hero_moving = false;
+    bool b_destination_present = false;
+    bool b_out_of_movement_points = false;
 
-    Pos m_pos;
+////Rects///////////////////////////////////////////
+    Rect hero_drect = Rect(460, 320, 40, 40);
+    Rect destination_mark_drect;
+    std::vector<Rect> destination_dot_drect;
+
+////Points relevant to the window///////////////////
+    Pos pos = Pos(460, 320);
+    Pos destination_mark_pos;
+    std::vector<Pos> destination_dot_pos;
+
+////Points relevant to the map//////////////////////
+    Pos pos_m;
+    Pos destination_mark_pos_m;
+    std::vector<Pos> destination_dot_pos_m;
+
+    std::vector<int> travel;
 
     Hero(Game* game);
     Hero(Game* game, Pos &pos, int max_movement_points);
@@ -46,15 +63,6 @@ public:
 // Seteriai ir geteriai ////////////////////////////////////////////////////////
     void set_direction(int a) {m_direction = a;}
     int get_direction() {return m_direction;}
-
-    void set_pos(Pos a) {m_pos = a;}
-    Pos get_pos() {return m_pos;}
-
-    void set_pos_x(int a) {m_pos.x = a;}
-    int get_pos_x() {return m_pos.x;}
-
-    void set_pos_y(int a) {m_pos.y = a;}
-    int get_pos_y() {return m_pos.y;}
 
     void set_max_movement_points(int a) {m_max_movement_points = a;}
     int get_max_movement_points() {return m_max_movement_points;}

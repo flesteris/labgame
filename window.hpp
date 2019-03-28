@@ -4,6 +4,14 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
+enum WindowDimensions
+{
+    WINDOW_WIDTH = 1280,
+    WINDOW_HEIGTH = 720,
+    WINDOW_CENTER_TILE_X = 460,
+    WINDOW_CENTER_TILE_Y = 320
+};
+
 class Window
 {
 private:

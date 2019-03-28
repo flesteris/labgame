@@ -14,7 +14,8 @@ enum CursorType
     N_ARROW = 5,
     NW_ARROW = 6,
     W_ARROW = 7,
-    CURSOR_IMAGE_COUNT = 8
+    NORMAL_CURSOR = 8,
+    CURSOR_IMAGE_COUNT = 9
 };
 
 class Cursor
@@ -25,8 +26,9 @@ private:
 
 public:
     Cursor();
+    ~Cursor();
     void load_surfaces();
-    void set_cursor();
+    void set_cursor(); /// gal ir nereik
     void set_cursor(int a);
 };
 
