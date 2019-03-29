@@ -55,7 +55,11 @@ void Game::get_input()
             }
         case SDL_MOUSEMOTION:
             {
-                detect_map_scrolling();
+                motion_pos = Pos(event.button.x, event.button.y);
+                if(!detect_map_scrolling())
+                {
+                    update_cursor();
+                }
             }
         case SDL_MOUSEBUTTONDOWN:
             {
@@ -102,7 +106,6 @@ void Game::get_input()
         case SDL_KEYDOWN:
             {
                 heroes[0]->b_hero_moving = false;
-
                 switch(event.key.keysym.sym)
                 {
                 case SDLK_q:
@@ -290,61 +293,62 @@ void Game::end_turn()
 void Game::find_path()
 {
     heroes[0]->travel.clear();
-    Pos pos = heroes[0]->destination_mark_pos_m;
+    Pos pos_m = heroes[0]->destination_mark_pos_m;
     bool west_f = false, east_f = false;
 
-    while(heroes[0]->pos_m != pos)
+            ///heroes[0]->destination_mark_pos = Pos(NULL, NULL); /// owo owo owo owo owo owo owo owo owo owo owo owo
+    while(heroes[0]->pos_m != pos_m)
     {
-        if(heroes[0]->pos_m.x < pos.x)
+        if(heroes[0]->pos_m.x < pos_m.x)
         {
             heroes[0]->travel.push_back(EAST);
-            --pos.x;
+            --pos_m.x;
             east_f = true;
         }
-        else if(heroes[0]->pos_m.x > pos.x)
+        else if(heroes[0]->pos_m.x > pos_m.x)
         {
             heroes[0]->travel.push_back(WEST);
-            ++pos.x;
+            ++pos_m.x;
             west_f = true;
         }
-        if(heroes[0]->pos_m.y < pos.y)
+        if(heroes[0]->pos_m.y < pos_m.y)
         {
             if(east_f)
             {
                 heroes[0]->travel[heroes[0]->travel.size() - 1] = SOUTHEAST;
-                --pos.y;
+                --pos_m.y;
                 east_f = false;
             }
             else if(west_f)
             {
                 heroes[0]->travel[heroes[0]->travel.size() - 1] = SOUTHWEST;
-                --pos.y;
+                --pos_m.y;
                 west_f = false;
             }
             else
             {
                 heroes[0]->travel.push_back(SOUTH);
-                --pos.y;
+                --pos_m.y;
             }
         }
-        else if(heroes[0]->pos_m.y > pos.y)
+        else if(heroes[0]->pos_m.y > pos_m.y)
         {
             if(east_f)
             {
                 heroes[0]->travel[heroes[0]->travel.size() - 1] = NORTHEAST;
-                ++pos.y;
+                ++pos_m.y;
                 east_f = false;
             }
             else if(west_f)
             {
                 heroes[0]->travel[heroes[0]->travel.size() - 1] = NORTHWEST;
-                ++pos.y;
+                ++pos_m.y;
                 west_f = false;
             }
             else
             {
                 heroes[0]->travel.push_back(NORTH);
-                ++pos.y;
+                ++pos_m.y;
             }
         }
     }
@@ -423,6 +427,7 @@ void Game::trigger_movement()
             find_path();
             lay_down_path();
             heroes[0]->b_destination_present = true;
+            update_cursor();
             //destination_mark_pos_m.print_coordinates();
         }
         else
@@ -432,58 +437,61 @@ void Game::trigger_movement()
     }
 }
 
-void Game::detect_map_scrolling()
+bool Game::detect_map_scrolling()
 {
-    Pos pos = Pos(event.button.x, event.button.y);
-
     std::fill_n(b_map_scroll, 8, false);
-    if(pos == Pos(0, 0))
+    if(motion_pos == Pos(0, 0))
     {
         b_map_scroll[NORTHWEST] = true;
         cursor.set_cursor(NW_ARROW);
+        return 1;
     }
-    else if(pos == Pos(0, WINDOW_HEIGTH - 1))
+    else if(motion_pos == Pos(0, WINDOW_HEIGTH - 1))
     {
         b_map_scroll[SOUTHWEST] = true;
         cursor.set_cursor(SW_ARROW);
+        return 1;
     }
-    else if(pos == Pos(WINDOW_WIDTH - 1, WINDOW_HEIGTH - 1))
+    else if(motion_pos == Pos(WINDOW_WIDTH - 1, WINDOW_HEIGTH - 1))
     {
         b_map_scroll[SOUTHEAST] = true;
         cursor.set_cursor(SE_ARROW);
+        return 1;
     }
-    else if(pos == Pos(WINDOW_WIDTH - 1, 0))
+    else if(motion_pos == Pos(WINDOW_WIDTH - 1, 0))
     {
         b_map_scroll[NORTHEAST] = true;
         cursor.set_cursor(NE_ARROW);
+        return 1;
     }
     else
     {
         std::fill_n(b_map_scroll, 8, false); // Without this the scrolling speed sometimes would be double
-        if(pos.x == 0)
+        if(motion_pos.x == 0)
         {
             b_map_scroll[WEST] = true;
             cursor.set_cursor(W_ARROW);
+            return 1;
         }
-        else if(pos.x == WINDOW_WIDTH - 1)
+        else if(motion_pos.x == WINDOW_WIDTH - 1)
         {
             b_map_scroll[EAST] = true;
             cursor.set_cursor(E_ARROW);
+            return 1;
         }
-        else if(pos.y == 0)
+        else if(motion_pos.y == 0)
         {
             b_map_scroll[NORTH] = true;
             cursor.set_cursor(N_ARROW);
+            return 1;
         }
-        else if(pos.y == WINDOW_HEIGTH - 1)
+        else if(motion_pos.y == WINDOW_HEIGTH - 1)
         {
             b_map_scroll[SOUTH] = true;
             cursor.set_cursor(S_ARROW);
+            return 1;
         }
-        else
-        {
-            cursor.set_cursor();
-        }
+        return 0;
     }
 }
 
@@ -498,6 +506,7 @@ void Game::focus_hero()
 void Game::update_movement()
 {
     focus_hero();
+    update_cursor();
     if(heroes[0]->travel.empty())
     {
         heroes[0]->b_hero_moving = false;
@@ -565,8 +574,16 @@ void Game::update_map_scrolling()
 
 void Game::update_destination_mark_position()
 {
-    heroes[0]->destination_mark_pos = Pos((heroes[0]->destination_mark_pos_m.x - center_pos_m.x + WINDOW_WIDTH_TILE_FIT/2) * TILE_WIDTH, (heroes[0]->destination_mark_pos_m.y - center_pos_m.y + WINDOW_HEIGTH_TILE_FIT/2) * TILE_HEIGHT);
-    heroes[0]->destination_mark_drect = Rect(heroes[0]->destination_mark_pos.x - TILE_WIDTH/2, heroes[0]->destination_mark_pos.y, TILE_WIDTH, TILE_HEIGHT);
+    if(!heroes[0]->travel.empty())
+    {
+        heroes[0]->destination_mark_pos = Pos((heroes[0]->destination_mark_pos_m.x - center_pos_m.x + WINDOW_WIDTH_TILE_FIT/2) * TILE_WIDTH, (heroes[0]->destination_mark_pos_m.y - center_pos_m.y + WINDOW_HEIGTH_TILE_FIT/2) * TILE_HEIGHT);
+        heroes[0]->destination_mark_drect = Rect(heroes[0]->destination_mark_pos.x - TILE_WIDTH/2, heroes[0]->destination_mark_pos.y, TILE_WIDTH, TILE_HEIGHT);
+    }
+    else
+    {
+        heroes[0]->destination_mark_pos = Pos(NULL, NULL);
+        heroes[0]->destination_mark_drect = Rect(NULL, NULL, NULL, NULL);
+    }
 }
 
 void Game::update_destination_dot_position(int i)
@@ -575,4 +592,23 @@ void Game::update_destination_dot_position(int i)
     heroes[0]->destination_dot_drect[i] = (Rect(heroes[0]->destination_dot_pos[i].x - TILE_WIDTH/2, heroes[0]->destination_dot_pos[i].y, TILE_WIDTH, TILE_HEIGHT));
 }
 
+bool Game::cursor_on_destination_mark()
+{
+    if(motion_pos.is_in_rect(heroes[0]->destination_mark_drect))
+    {
+        return 1;
+    }
+    return 0;
+}
 
+void Game::update_cursor()
+{
+    if(cursor_on_destination_mark())
+    {
+        cursor.set_cursor(GO_TO_DESTINATION);
+    }
+    else
+    {
+        cursor.set_cursor();
+    }
+}

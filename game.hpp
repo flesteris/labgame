@@ -54,6 +54,7 @@ public:
     Rect map_size_drect;
 
 ////Points relevant to the window///////////////////
+    Pos motion_pos;
     Pos selected_pos;
     Pos center_pos = Pos(WINDOW_CENTER_TILE_X, WINDOW_CENTER_TILE_Y);
 
@@ -89,7 +90,9 @@ public:
     void focus_hero();
     void trigger_movement();
     void update_movement();
-    void detect_map_scrolling();
+    bool detect_map_scrolling();
+    bool cursor_on_destination_mark();
+    void update_cursor();
     void update_map_scrolling();
     void update_destination_mark_position();
     void update_destination_dot_position(int i);

@@ -31,6 +31,7 @@ void Cursor::load_surfaces()
     surfaces[NW_ARROW] = SDL_LoadBMP("images//cursors//NW_arrow.bmp");
     surfaces[W_ARROW] = SDL_LoadBMP("images//cursors//W_arrow.bmp");
     surfaces[NORMAL_CURSOR] = SDL_LoadBMP("images//cursors//normal_cursor.bmp");
+    surfaces[GO_TO_DESTINATION] = SDL_LoadBMP("images//cursors//go_to_destination.bmp");
 }
 
 void Cursor::set_cursor() ///gal ir nereik
@@ -86,6 +87,11 @@ void Cursor::set_cursor(int a)
     case NORMAL_CURSOR:
         {
             cursor = SDL_CreateColorCursor(surfaces[NORMAL_CURSOR], 0, 0);
+            break;
+        }
+    case GO_TO_DESTINATION:
+        {
+            cursor = SDL_CreateColorCursor(surfaces[GO_TO_DESTINATION], 10, 10);
             break;
         }
     default:

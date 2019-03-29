@@ -69,6 +69,15 @@ bool Pos::is_in_rect(Rect &rect)
     return true;
 }
 
+bool Pos::is_in_rect(Pos &pos, int w, int h)
+{
+    if(x < pos.x || y < pos.y || x > w + pos.x || y > h + pos.y)
+    {
+        return false;
+    }
+    return true;
+}
+
 bool Pos::is_in_rect(int uper_left_x, int uper_left_y, int w, int h)
 {
     if(x < uper_left_x || y < uper_left_y || x > w + uper_left_x || y > h + uper_left_y)

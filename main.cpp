@@ -28,5 +28,5 @@ int main(int argc, char** argv)
     return 0;
 }
 
-/// Norisi scrollinimo greiti reguliuoti arba suletinti
+/// very minor - norisi scrollinimo greiti reguliuoti arba tiesiog suletinti
 /// 'minor' - Piesiama ryskiai uz ribu (manrods) - veliau tvarkyt

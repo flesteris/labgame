@@ -32,6 +32,7 @@ public:
     bool operator !=(const Pos &other) const;
 
     bool is_in_rect(Rect &rect);
+    bool is_in_rect(Pos &pos, int w, int h);
     bool is_in_rect(int uper_left_x, int uper_left_y, int w, int h);
     void fit_in_rect(Rect &rect);
     void print_coordinates(); /// Just a test helper
