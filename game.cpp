@@ -609,6 +609,6 @@ void Game::update_cursor()
     }
     else
     {
-        cursor.set_cursor();
+        cursor.set_cursor(NORMAL_CURSOR);
     }
 }
