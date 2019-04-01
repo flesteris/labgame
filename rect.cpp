@@ -5,11 +5,6 @@ Rect::Rect() : pos(new Pos(0, 0)), w(0), h(0)
 
 }
 
-/*Rect::Rect(Pos upper_left_point, Pos lower_right_point) : pos(upper_left_point), w(lower_right_point.x - upper_left_point.x), h(lower_right_point.y - upper_left_point.y)
-{
-
-}*/
-
 Rect::Rect(Pos upper_left_point, int width, int height) : pos(new Pos(upper_left_point.x, upper_left_point.y)), w(width), h(height)
 {
 

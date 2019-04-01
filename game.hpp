@@ -4,13 +4,15 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+
+#include "cursor.hpp"
 #include "game_time.hpp"
 #include "hero.hpp"
 #include "images.hpp"
 #include "map.hpp"
+#include "monster.hpp"
 #include "pos.hpp"
 #include "window.hpp"
-#include "cursor.hpp"
 
 enum HeroMoveSpeed
 {
@@ -24,7 +26,9 @@ enum Dimensions
     TILE_WIDTH = 40,
     TILE_HEIGHT = 40,
     WINDOW_WIDTH_TILE_FIT = 24,
-    WINDOW_HEIGTH_TILE_FIT = 17
+    WINDOW_HEIGTH_TILE_FIT = 17,
+    WINDOW_CENTER_TILE_X = 460,
+    WINDOW_CENTER_TILE_Y = 320
 };
 
 class Cursor;
@@ -33,32 +37,30 @@ class Images;
 
 class Game
 {
-private:
-
 public:
     SDL_Event event;
 
 ////Flags///////////////////////////////////////////
     bool b_quit = false;
     bool b_hourglass_pressed = false;
-    bool b_map_scroll[8] = {}; // '{}' Sets all as false
+    bool b_map_scroll[8] = {}; // '{}' - sets all as false
     bool b_end_turn = false;
     int hero_move_speed_counter = 0;
 
 ////Rects///////////////////////////////////////////
-    Rect map_screen_drect = Rect(0, 0, 960, 680);
-    Rect right_panel_drect = Rect(960, 0, 320, 680);
-    Rect bottom_bar_drect = Rect(0, 680, 1280, 40);
-    Rect hourglass_drect = Rect(1070, 540, 100, 100);
-    Rect center_drect = Rect(WINDOW_CENTER_TILE_X, WINDOW_CENTER_TILE_Y, TILE_WIDTH, TILE_HEIGHT);
-    Rect map_size_drect;
+    const Rect map_screen_drect = Rect(0, 0, 960, 680);
+    const Rect right_panel_drect = Rect(960, 0, 320, 680);
+    const Rect bottom_bar_drect = Rect(0, 680, 1280, 40);
+    const Rect hourglass_drect = Rect(1070, 540, 100, 100);
+    const Rect center_drect = Rect(WINDOW_CENTER_TILE_X, WINDOW_CENTER_TILE_Y, TILE_WIDTH, TILE_HEIGHT);
+    Rect map_size_rect;
 
-////Points relevant to the window///////////////////
+////Points relative to the window///////////////////
     Pos motion_pos;
     Pos selected_pos;
-    Pos center_pos = Pos(WINDOW_CENTER_TILE_X, WINDOW_CENTER_TILE_Y);
+    const Pos center_pos = Pos(WINDOW_CENTER_TILE_X, WINDOW_CENTER_TILE_Y);
 
-////Points relevant to the map//////////////////////
+////Points relative to the map//////////////////////
     Pos selected_pos_m;
     Pos center_pos_m;
 
@@ -68,6 +70,7 @@ public:
 
     Cursor cursor;
     std::vector<Hero*> heroes;
+    std::vector<Monster*> monsters;
     Map map;
     Window* window;
     Images* images;
@@ -80,11 +83,16 @@ public:
     void update();
     void draw();
 
+    void set_monsters();
+    void update_monsters_position();
+    void draw_monsters();
+    int fight(Hero* hero, Monster* monster);
+
     void set_options();
     void end_turn();
     void find_path();
     void lay_down_path();
-    void update_path();
+    void update_path_position();
     void draw_path();
     void draw_ui();
     void focus_hero();
@@ -92,6 +100,7 @@ public:
     void update_movement();
     bool detect_map_scrolling();
     bool cursor_on_destination_mark();
+    bool cursor_on_monster();
     void update_cursor();
     void update_map_scrolling();
     void update_destination_mark_position();

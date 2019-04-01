@@ -3,18 +3,21 @@
 Game::Game()
 {
     map.load_map_data("maps//map_1_data.txt");
-    map_size_drect = Rect(0, 0, map.w - 1, map.h - 1);
+    map_size_rect = Rect(0, 0, map.w - 1, map.h - 1);
     set_options();
     window = new Window();
     images = new Images(this);
+    set_monsters();
+    update_monsters_position();
+    end_turn();
     SDL_RaiseWindow(window->win);
     SDL_SetWindowGrab(window->win, SDL_TRUE);
 }
 
 Game::~Game()
 {
-    delete window;
     delete images;
+    delete window;
     std::cout << "Memory cleared! ...";
 }
 
@@ -22,7 +25,7 @@ void Game::set_options()
 {
     std::cout << "Enter starting coordinates(0-" << map.w - 1 << " 0-" << map.h - 1 << "): ";
     std::cin >> center_pos_m.x >> center_pos_m.y;
-    if(!center_pos_m.is_in_rect(map_size_drect))
+    if(!center_pos_m.is_in_rect(map_size_rect))
     {
         center_pos_m = Pos(0, 0);
         std::cout << "Incorrect coordinates. Loading default coordinates." << std::endl;
@@ -80,10 +83,7 @@ void Game::get_input()
                 }
                 /*if(SDL_BUTTON_RIGHT == event.button.button)
                 {
-                    for(int i = 0; i < (int)travel.size(); ++i)
-                    {
-                        std::cout << travel[i] << " " ;
-                    }
+
                 }*/
                 break;
             }
@@ -120,73 +120,73 @@ void Game::get_input()
                     }
                 case SDLK_KP_1:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[SOUTHWEST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[SOUTHWEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_2:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[SOUTH]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[SOUTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_DOWN:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[SOUTH]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[SOUTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_3:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[SOUTHEAST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[SOUTHEAST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_4:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[WEST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[WEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_LEFT:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[WEST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[WEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_6:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[EAST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[EAST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_RIGHT:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[EAST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[EAST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_7:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[NORTHWEST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[NORTHWEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_8:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[NORTH]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[NORTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_UP:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[NORTH]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[NORTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_9:
                     {
-                        selected_pos_m = Pos(heroes[0]->pos_m + DIRECTIONS[NORTHEAST]);
+                        selected_pos_m = heroes[0]->pos_m + DIRECTIONS[NORTHEAST];
                         trigger_movement();
                         break;
                     }
@@ -231,6 +231,8 @@ void Game::update()
         {
             hero_move_speed_counter = 0;
             update_movement();
+            update_monsters_position();
+            update_cursor();
         }
         else
         {
@@ -246,6 +248,7 @@ void Game::update()
 void Game::draw()
 {
     draw_land(this);
+    draw_monsters();
     draw_path();
     images->hero_images[heroes[0]->get_direction()]->draw(Rect(), heroes[0]->hero_drect);
     draw_ui();
@@ -260,7 +263,7 @@ void draw_land(Game* game)
         {
             for(int j = game->center_pos_m.y - WINDOW_HEIGTH_TILE_FIT/2, l = 0/*(int)game->center_pos_m.y - game->center_pos_m.y*/; j < game->center_pos_m.y + WINDOW_HEIGTH_TILE_FIT/2 + 2; ++j, ++l)
             {
-                Rect tile_drect = Rect(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+                Rect tile_drect(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
                 game->images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
             }
         }
@@ -270,12 +273,12 @@ void draw_land(Game* game)
             {
                 if(j < 0 || j > game->map.w - 1)
                 {
-                    Rect tile_drect = Rect(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+                    Rect tile_drect(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
                     game->images->tiles[OFF_MAP_TILE]->draw(Rect(), tile_drect);
                 }
                 else
                 {
-                    Rect tile_drect = Rect(Pos(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT), TILE_WIDTH, TILE_HEIGHT);
+                    Rect tile_drect(Pos(k*TILE_WIDTH + TILE_WIDTH/2, l*TILE_HEIGHT), TILE_WIDTH, TILE_HEIGHT);
                     game->images->tiles[game->map.tiles[i+j*game->map.w] - 1]->draw(Rect(), tile_drect);
                 }
             }
@@ -286,8 +289,16 @@ void draw_land(Game* game)
 void Game::end_turn()
 {
     heroes[0]->set_current_movement_points(heroes[0]->get_max_movement_points());
-    game_time.next_day();
     focus_hero();
+    std::cout << std::endl << "**********************************************" << std::endl;
+    game_time.next_day();
+    std::cout << "Your current army:" << std::endl;
+    for(int i = 0; i < heroes[0]->hero_army.size(); ++i)
+    {
+        std::cout << heroes[0]->hero_army[i]->get_count() << " " << heroes[0]->hero_army[i]->name() << "(s)" << std::endl;
+    }
+    std::cout << "**********************************************" << std::endl << std::endl;
+
 }
 
 void Game::find_path()
@@ -296,7 +307,6 @@ void Game::find_path()
     Pos pos_m = heroes[0]->destination_mark_pos_m;
     bool west_f = false, east_f = false;
 
-            ///heroes[0]->destination_mark_pos = Pos(NULL, NULL); /// owo owo owo owo owo owo owo owo owo owo owo owo
     while(heroes[0]->pos_m != pos_m)
     {
         if(heroes[0]->pos_m.x < pos_m.x)
@@ -376,7 +386,7 @@ void Game::lay_down_path()
     }
 }
 
-void Game::update_path()
+void Game::update_path_position()
 {
     update_destination_mark_position();
     for(int i = 0; i < (int)heroes[0]->travel.size() - 1; ++i)
@@ -423,16 +433,17 @@ void Game::trigger_movement()
     {
         if(selected_pos_m.is_in_rect(0, 0, map.w - 1, map.h - 1) && selected_pos_m != heroes[0]->pos_m)
         {
+            heroes[0]->b_destination_present = true;
             heroes[0]->destination_mark_pos_m = selected_pos_m;
             find_path();
             lay_down_path();
-            heroes[0]->b_destination_present = true;
             update_cursor();
             //destination_mark_pos_m.print_coordinates();
         }
         else
         {
             heroes[0]->b_destination_present = false;
+            heroes[0]->destination_mark_drect = Rect();
         }
     }
 }
@@ -500,7 +511,9 @@ void Game::focus_hero()
     center_pos_m = heroes[0]->pos_m;
     heroes[0]->pos = center_pos;
     heroes[0]->hero_drect = center_drect;
-    update_path();
+    update_path_position();
+    update_monsters_position();
+    update_cursor();
 }
 
 void Game::update_movement()
@@ -530,6 +543,24 @@ void Game::update_movement()
             heroes[0]->travel.pop_back();
             if(heroes[0]->travel.empty())
             {
+                for(int i = 0; i < (int)monsters.size(); ++i)
+                {
+                    if(heroes[0]->pos_m == monsters[i]->pos_m)
+                    {
+                        if(fight(heroes[0], monsters[i]))
+                        {
+                            delete monsters[i];
+                            monsters.erase(monsters.begin() + i);
+                        }
+                        else
+                        {
+                            std::cout << "Your hero has died! You have lost!" << std::endl;
+                            b_quit = true;
+                            return;
+                        }
+                        break;
+                    }
+                }
                 heroes[0]->b_hero_moving = false;
                 heroes[0]->b_destination_present = false;
             }
@@ -548,23 +579,25 @@ void Game::update_map_scrolling()
     {
         if(b_map_scroll[i])
         {
-            Pos pos_m = Pos(center_pos_m + DIRECTIONS[i]);
-            if(pos_m.is_in_rect(map_size_drect))
+            Pos pos_m = center_pos_m + DIRECTIONS[i];
+            if(pos_m.is_in_rect(map_size_rect))
             {
                 center_pos_m = pos_m;
                 heroes[0]->pos = Pos((heroes[0]->pos_m.x - center_pos_m.x + WINDOW_WIDTH_TILE_FIT/2) * TILE_WIDTH, (heroes[0]->pos_m.y - center_pos_m.y + WINDOW_HEIGTH_TILE_FIT/2) * TILE_HEIGHT);
                 heroes[0]->hero_drect = Rect(heroes[0]->pos.x - TILE_WIDTH/2, heroes[0]->pos.y, TILE_WIDTH, TILE_HEIGHT);
-                update_path();
+                update_path_position();
+                update_monsters_position();
             }
             else // Doesn't stick to the border while scrolling diagonally
             {
-                pos_m.fit_in_rect(map_size_drect);
+                pos_m.fit_in_rect(map_size_rect);
                 if(center_pos_m != pos_m)
                 {
                     center_pos_m = pos_m;
                     heroes[0]->pos = Pos((heroes[0]->pos_m.x - center_pos_m.x + WINDOW_WIDTH_TILE_FIT/2) * TILE_WIDTH, (heroes[0]->pos_m.y - center_pos_m.y + WINDOW_HEIGTH_TILE_FIT/2) * TILE_HEIGHT);
                     heroes[0]->hero_drect = Rect(heroes[0]->pos.x - TILE_WIDTH/2, heroes[0]->pos.y, TILE_WIDTH, TILE_HEIGHT);
-                    update_path();
+                    update_path_position();
+                    update_monsters_position();
                 }
             }
             break;
@@ -581,8 +614,7 @@ void Game::update_destination_mark_position()
     }
     else
     {
-        heroes[0]->destination_mark_pos = Pos(NULL, NULL);
-        heroes[0]->destination_mark_drect = Rect(NULL, NULL, NULL, NULL);
+        heroes[0]->destination_mark_drect = Rect();
     }
 }
 
@@ -601,9 +633,25 @@ bool Game::cursor_on_destination_mark()
     return 0;
 }
 
+bool Game::cursor_on_monster()
+{
+    for(int i = 0; i < (int)monsters.size(); ++i)
+    {
+        if(motion_pos.is_in_rect(monsters[i]->drect))
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void Game::update_cursor()
 {
-    if(cursor_on_destination_mark())
+    if(cursor_on_monster())
+    {
+        cursor.set_cursor(COMBAT_CURSOR);
+    }
+    else if(cursor_on_destination_mark())
     {
         cursor.set_cursor(GO_TO_DESTINATION);
     }
@@ -612,3 +660,123 @@ void Game::update_cursor()
         cursor.set_cursor(NORMAL_CURSOR);
     }
 }
+
+void Game::set_monsters()
+{
+    for(int y = 0; y < map.h; ++y)
+    {
+        for(int x = 0; x < map.w; ++x)
+        {
+            if(map.get_entity(x, y))
+            {
+                if(map.get_entity(x, y) == 1)
+                {
+                    monsters.push_back(new Wolf(x, y, map.entity_count[map.entity_count.size() - 1]));
+                }
+                else if(map.get_entity(x, y) == 2)
+                {
+                    monsters.push_back(new Goblin(x, y, map.entity_count[map.entity_count.size() - 1]));
+                }
+                else
+                {
+                    monsters.push_back(new Snake(x, y, map.entity_count[map.entity_count.size() - 1]));
+                }
+                map.entity_count.pop_back();
+            }
+        }
+    }
+}
+
+void Game::update_monsters_position()
+{
+    for(int i = 0; i < (int)monsters.size(); ++i)
+    {
+        monsters[i]->pos = Pos((monsters[i]->pos_m.x - center_pos_m.x + WINDOW_WIDTH_TILE_FIT/2) * TILE_WIDTH, (monsters[i]->pos_m.y - center_pos_m.y + WINDOW_HEIGTH_TILE_FIT/2) * TILE_HEIGHT);
+        monsters[i]->drect = Rect(monsters[i]->pos.x - TILE_WIDTH/2, monsters[i]->pos.y, TILE_WIDTH, TILE_HEIGHT);
+    }
+}
+
+void Game::draw_monsters()
+{
+    for(int i = 0; i < (int)monsters.size(); ++i)
+    {
+        images->monster_images[map.get_entity(monsters[i]->pos_m.x, monsters[i]->pos_m.y) - 1]->draw(Rect(), monsters[i]->drect);
+    }
+}
+
+int Game::fight(Hero* hero, Monster* monster) // temporary
+{
+    std::cout << "You just attacked " << monster->get_count() << " " << monster->name() << "(s)!" << std::endl;
+    while(true)
+    {
+        std::cout << "Your " << hero->hero_army[0]->name() << " attacked." << std::endl << "Enemy ";
+        if(!monster->defend(hero->hero_army[0]->attack()))
+        {
+            std::cout << "You have won!" << std::endl;
+            return 1;
+        }
+        else
+        {
+            std::cout << "The enemy " << monster->name() << " retaliated." << std::endl << "Your ";
+            if(!(hero->hero_army[0]->defend(monster->retaliate())))
+            {
+                delete hero->hero_army[0];
+                hero->hero_army.erase(hero->hero_army.begin());
+                if(hero->hero_army.empty())
+                {
+                    return 0;
+                }
+            }
+        }
+        std::cout << "The enemy " << monster->name() << " attacked." << std::endl << "Your ";
+        if(!hero->hero_army[0]->defend(monster->attack()))
+        {
+            delete hero->hero_army[0];
+            hero->hero_army.erase(hero->hero_army.begin());
+            if(hero->hero_army.empty())
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            std::cout << "Your " << hero->hero_army[0]->name() << " retaliated." << std::endl << "Enemy ";
+            if(!(monster->defend(hero->hero_army[0]->retaliate())))
+            {
+                std::cout << "You have won!" << std::endl;
+                return 1;
+            }
+        }
+
+        if(hero->hero_army.size() > 1)
+        {
+            for(int i = 1; i < hero->hero_army.size(); ++i)
+            {
+                std::cout << "Your " << hero->hero_army[i]->name() << " attacked." << std::endl << "Enemy ";
+                if(!monster->defend(hero->hero_army[i]->attack()))
+                {
+                    std::cout << "You have won!" << std::endl;
+                    return 1;
+                }
+                else
+                {
+                    if(!monster->retaliate())
+                    {
+                        std::cout << "The enemy " << monster->name() << " retaliated." << std::endl << "Your ";
+                        if(!(hero->hero_army[i]->defend(monster->retaliate())))
+                        {
+                            delete hero->hero_army[i];
+                            hero->hero_army.erase(hero->hero_army.begin() + i);
+                        }
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < hero->hero_army.size(); ++i)
+        {
+            hero->hero_army[i]->retaliate_reset();
+        }
+        monster->retaliate_reset();
+    }
+}
+

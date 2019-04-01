@@ -13,6 +13,7 @@ private:
 public:
     GameTime();
     ~GameTime();
+    void print_date();
     void next_day();
 };
 

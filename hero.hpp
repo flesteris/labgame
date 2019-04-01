@@ -2,9 +2,8 @@
 #define HERO_HPP
 
 #include "game.hpp"
+#include "monster.hpp"
 #include "pos.hpp"
-
-extern const Pos DIRECTIONS[9];
 
 enum HeroDirection
 {
@@ -42,17 +41,18 @@ public:
     Rect destination_mark_drect;
     std::vector<Rect> destination_dot_drect;
 
-////Points relevant to the window///////////////////
+////Points relative to the window///////////////////
     Pos pos = Pos(460, 320);
     Pos destination_mark_pos;
     std::vector<Pos> destination_dot_pos;
 
-////Points relevant to the map//////////////////////
+////Points relative to the map//////////////////////
     Pos pos_m;
     Pos destination_mark_pos_m;
     std::vector<Pos> destination_dot_pos_m;
 
     std::vector<int> travel;
+    std::vector<Monster*> hero_army; // max 5 units
 
     Hero(Game* game);
     Hero(Game* game, Pos &pos, int max_movement_points);

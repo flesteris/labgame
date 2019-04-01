@@ -1,6 +1,6 @@
 #include "game_time.hpp"
 
-GameTime::GameTime() : day(1), week(1), month(1)
+GameTime::GameTime() : day(0), week(1), month(1)
 {
 
 }
@@ -10,6 +10,10 @@ GameTime::~GameTime()
 
 }
 
+void GameTime::print_date()
+{
+    std::cout << "Day " << day << ", Week " << week << ", Month " << month << std::endl;
+}
 
 void GameTime::next_day()
 {
@@ -30,6 +34,5 @@ void GameTime::next_day()
     {
         day++;
     }
-
-    std::cout << "Day " << day << ", Week " << week << ", Month " << month << std::endl;
+    print_date();
 }

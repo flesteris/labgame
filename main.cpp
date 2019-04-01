@@ -1,14 +1,11 @@
-// Kad sukompiliuoti per terminalą:
-// g++ sdl.cpp -lSDL2
-// SDL2 turi būti instaliuota, kad šitas veiktų
-
-#include <SDL2/SDL.h>
 #include <iostream>
+#include <SDL2/SDL.h>
+
 #include "game.hpp"
 
 int main(int argc, char** argv)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if(SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
         return 1;
@@ -28,5 +25,6 @@ int main(int argc, char** argv)
     return 0;
 }
 
-/// very minor - norisi scrollinimo greiti reguliuoti arba tiesiog suletinti
+/// medium - norisi scrollinimo greiti reguliuoti arba tiesiog suletinti
 /// 'minor' - Piesiama ryskiai uz ribu (manrods) - veliau tvarkyt
+/// medium - SDL_PollEvent gali baisiai uzsibufferint

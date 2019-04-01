@@ -7,15 +7,11 @@
 enum WindowDimensions
 {
     WINDOW_WIDTH = 1280,
-    WINDOW_HEIGTH = 720,
-    WINDOW_CENTER_TILE_X = 460,
-    WINDOW_CENTER_TILE_Y = 320
+    WINDOW_HEIGTH = 720
 };
 
 class Window
 {
-private:
-
 public:
     SDL_Window *win;
     SDL_Renderer *ren;

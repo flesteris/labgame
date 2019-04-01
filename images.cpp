@@ -27,6 +27,11 @@ void Images::load_images()
         ui.push_back(new Image(game));
     }
 
+    for (int i = 0; i < MONSTER_IMAGE_COUNT; ++i)
+    {
+        monster_images.push_back(new Image(game));
+    }
+
     tiles[GRASS_TILE_1]->loadBMP("images//map_tiles//grass_tile_1.bmp");
     tiles[GRASS_TILE_2]->loadBMP("images//map_tiles//grass_tile_2.bmp");
     tiles[GRASS_TILE_3]->loadBMP("images//map_tiles//grass_tile_3.bmp");
@@ -53,4 +58,8 @@ void Images::load_images()
     ui[DESTINATION_MARK_EMPTY]->loadBMP("images//destination_mark_empty.bmp");
     ui[DESTINATION_DOT]->loadBMP("images//destination_dot.bmp");
     ui[DESTINATION_DOT_EMPTY]->loadBMP("images//destination_dot_empty.bmp");
+
+    monster_images[WOLF]->loadBMP("images//monsters//wolf.bmp");
+    monster_images[GOBLIN]->loadBMP("images//monsters//goblin.bmp");
+    monster_images[SNAKE]->loadBMP("images//monsters//snake.bmp");
 }

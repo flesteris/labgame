@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
+#include "cursor_image.hpp"
+
 enum CursorType
 {
     SW_ARROW = 0,
@@ -16,21 +18,20 @@ enum CursorType
     W_ARROW = 7,
     NORMAL_CURSOR = 8,
     GO_TO_DESTINATION = 9,
-    CURSOR_IMAGE_COUNT = 10
+    COMBAT_CURSOR = 10,
+    CURSOR_IMAGE_COUNT = 11
 };
 
 class Cursor
 {
 private:
-    std::vector<SDL_Surface*> surfaces;
-    SDL_Cursor *cursor;
+    std::vector<SDL_Cursor*> cursors;
 
 public:
     Cursor();
     ~Cursor();
     void load_surfaces();
-    void set_cursor(); /// gal ir nereik
-    void set_cursor(int a);
+    void set_cursor(int i);
 };
 
 #endif // CURSOR_HPP

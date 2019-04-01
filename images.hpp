@@ -3,8 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
-#include "image.hpp"
+
 #include "game.hpp"
+#include "image.hpp"
 
 enum TileType
 {
@@ -16,6 +17,14 @@ enum TileType
     GRASS_TILE_6 = 5,
     OFF_MAP_TILE = 6,
     TILE_IMAGE_COUNT = 7
+};
+
+enum MonsterType
+{
+    WOLF = 0,
+    GOBLIN = 1,
+    SNAKE = 2,
+    MONSTER_IMAGE_COUNT = 3
 };
 
 enum UI
@@ -44,6 +53,7 @@ public:
     std::vector<Image*> tiles;
     std::vector<Image*> hero_images;
     std::vector<Image*> ui;
+    std::vector<Image*> monster_images;
 
     Images(Game* game);
     ~Images();
