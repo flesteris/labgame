@@ -12,49 +12,63 @@ Pos::Pos(int x, int y) : x(x), y(y)
 
 }
 
-/*Pos::Pos(float x, float y) : x(x), y(y)
-{
-
-}*/
-
-Pos Pos:: operator +(const Pos &other) const
+Pos Pos::operator +(const Pos &other) const
 {
     return Pos(x + other.x, y + other.y);
 }
 
-Pos &Pos:: operator +=(const Pos &other)
+Pos Pos::operator +(int other) const
+{
+    return Pos(x + other, y + other);
+}
+
+Pos &Pos::operator++() // Called for ++Pos
+{
+    ++x;
+    ++y;
+    return *this;
+}
+
+Pos &Pos::operator +=(const Pos &other)
 {
     x += other.x;
     y += other.y;
     return *this;
 }
 
-Pos Pos:: operator -(const Pos &other) const
+Pos Pos::operator -(const Pos &other) const
 {
     return Pos(x - other.x, y - other.y);
 }
 
-Pos Pos:: operator -=(const Pos &other) const
+Pos Pos::operator -(int other) const
 {
-    return Pos(x - other.x, y - other.y);
+    return Pos(x - other, y - other);
 }
 
-Pos Pos:: operator *(const int &other) const
+Pos &Pos::operator -=(const Pos &other)
+{
+    x -= other.x;
+    y -= other.y;
+    return *this;
+}
+
+Pos Pos::operator *(const Pos &other) const
+{
+    return Pos(x * other.x, y * other.y);
+}
+
+Pos Pos::operator *(int other) const
 {
     return Pos(x * other, y * other);
 }
 
-/*Pos Pos:: operator *(const float &other) const
-{
-    return Pos(x * other, y * other);
-}*/
-
-bool Pos:: operator ==(const Pos &other) const
+bool Pos::operator ==(const Pos &other) const
 {
     return x == other.x && y == other.y;
 }
 
-bool Pos:: operator !=(const Pos &other) const
+bool Pos::operator !=(const Pos &other) const
 {
     return x != other.x || y != other.y;
 }
@@ -96,7 +110,6 @@ void Pos::fit_in_rect(const Rect &rect)
     {
         x = rect.w + rect.pos->x;
     }
-
     if(y < rect.pos->y)
     {
         y = rect.pos->y;

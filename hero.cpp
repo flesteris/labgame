@@ -1,17 +1,21 @@
 #include "hero.hpp"
 
-Hero::Hero(Game* game) : game(game), pos_m(0, 0), m_max_movement_points(10), m_current_movement_points(10), m_direction(EAST)
-{
-    hero_army.push_back(new Wolf(15));
-    hero_army.push_back(new Goblin(15));
-    hero_army.push_back(new Snake(20));
-}
+#include <fstream>
 
-Hero::Hero(Game* game, Pos &pos, int max_movement_points) : game(game), pos_m(pos), m_max_movement_points(max_movement_points), m_current_movement_points(max_movement_points), m_direction(EAST)
+Hero::Hero(Game* game, Pos &pos, int max_movement_points) :
+    game(game),
+    pos_on_map(pos),
+    m_max_movement_points(max_movement_points),
+    m_current_movement_points(max_movement_points),
+    m_direction(EAST),
+    b_hero_moving(false),
+    b_destination_present(false),
+    b_out_of_movement_points(false)
 {
     hero_army.push_back(new Wolf(15));
     hero_army.push_back(new Goblin(15));
     hero_army.push_back(new Snake(20));
+    tile_access_map = new TileAccessMap(game, this);
 }
 
 Hero::~Hero()
@@ -25,12 +29,12 @@ int Hero::move()
     {
         return 0;
     }
-    Pos pos = Pos(pos_m + DIRECTIONS[m_direction]);
+    Pos pos = pos_on_map + DIRECTIONS[m_direction];
 
     if(pos.is_in_rect(0, 0, game->map.w - 1, game->map.h - 1))
     {
-        pos_m = pos;
-        game->center_pos_m = pos;
+        pos_on_map = pos;
+        game->center_pos_on_map = pos;
         m_current_movement_points--;
         return 1;
     }

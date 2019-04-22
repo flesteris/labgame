@@ -16,30 +16,40 @@ int Map::load_map_data(const std::string& filename)
 
     if(map_data.is_open())
     {
-        int value;
+        int count, value, value_2;
         map_data >> w;
         map_data >> h;
-        for(int i = 0; i < h; i++)
+        for(int i = 0; i < h; ++i)
         {
-            for(int j = 0; j < w; j++)
+            for(int j = 0; j < w; ++j)
             {
                 map_data >> value;
                 tiles.push_back(value);
             }
         }
-        for(int i = 0; i < h; i++)
+        for(int i = 0; i < h; ++i)
         {
-            for(int j = 0; j < w; j++)
+            for(int j = 0; j < w; ++j)
             {
                 map_data >> value;
                 entities.push_back(value);
             }
         }
-        while(!map_data.eof())
+        map_data >> count;
+        for(int i = 0; i < count; ++i)
         {
             map_data >> value;
             entity_count.push_back(value);
         }
+        map_data >> heroes_count;
+        for(int i = 0; i < heroes_count; ++i)
+        {
+            map_data >> value >> value_2;
+            heroes_pos_on_map.push_back(new Pos(value, value_2));
+            map_data >> value;
+            heroes_movement_points.push_back(value);
+        }
+
         map_data.close();
         return 1;
     }
@@ -52,20 +62,36 @@ int Map::load_map_data(const std::string& filename)
 
 int Map::get_tile(int x, int y) const
 {
-    if(x > w - 1|| y > h)
+    if(x >= w || y >= h || x < 0 || y < 0)
     {
-        std::cout << "Incorrect coordinates!" << std::endl;
         return -1;
     }
-    return tiles[y*w+x];
+    return tiles[y * w + x];
+}
+
+int Map::get_tile(const Pos &pos) const
+{
+    if(pos.x >= w || pos.y >= h || pos.x < 0 || pos.y < 0)
+    {
+        return -1;
+    }
+    return tiles[pos.y * w + pos.x];
 }
 
 int Map::get_entity(int x, int y) const
 {
-    if(x > w - 1|| y > h)
+    if(x >= w || y >= h || x < 0 || y < 0)
     {
-        std::cout << "Incorrect coordinates!" << std::endl;
         return -1;
     }
-    return entities[y*w+x];
+    return entities[y * w + x];
+}
+
+int Map::get_entity(const Pos &pos) const
+{
+    if(pos.x >= w || pos.y >= h || pos.x < 0 || pos.y < 0)
+    {
+        return -1;
+    }
+    return entities[pos.y * w + pos.x];
 }

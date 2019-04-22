@@ -4,6 +4,7 @@ Cursor::Cursor()
 {
     load_surfaces();
     set_cursor(NORMAL_CURSOR);
+    current_cursor = NORMAL_CURSOR;
 }
 
 Cursor::~Cursor()
@@ -43,5 +44,9 @@ void Cursor::load_surfaces()
 
 void Cursor::set_cursor(int i)
 {
-    SDL_SetCursor(cursors[i]);
+    if(i != current_cursor)
+    {
+        SDL_SetCursor(cursors[i]);
+        current_cursor = i;
+    }
 }

@@ -10,22 +10,21 @@ class Rect;
 class Pos
 {
 public:
-    /*float x;
-    float y;*/
-
     int x;
     int y;
 
     Pos();
     Pos(int x, int y);
-    //Pos(float x, float y);
 
     Pos operator +(const Pos &other) const;
+    Pos operator +(int other) const;
+    Pos &operator ++();
     Pos &operator +=(const Pos &other);
     Pos operator -(const Pos &other) const;
-    Pos operator -=(const Pos &other) const;
-    Pos operator *(const int &other) const;
-    //Pos operator *(const float &other) const;
+    Pos operator -(int other) const;
+    Pos &operator -=(const Pos &other);
+    Pos operator *(const Pos &other) const;
+    Pos operator *(int other) const;
     bool operator ==(const Pos &other) const;
     bool operator !=(const Pos &other) const;
 

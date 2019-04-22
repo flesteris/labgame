@@ -25,4 +25,6 @@ void Window::create_window()
         SDL_DestroyWindow(win);
         std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
     }
+    SDL_RaiseWindow(win);
+    SDL_SetWindowGrab(win, SDL_TRUE);
 }

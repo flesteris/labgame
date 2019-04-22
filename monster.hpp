@@ -5,6 +5,11 @@
 
 #include "pos.hpp"
 #include "rect.hpp"
+#include "hero.hpp"
+
+typedef int damage;
+
+class Hero;
 
 class Monster
 {
@@ -15,12 +20,10 @@ protected:
     int current_hp;
     int max_hp;
     int health_pool;
-    bool b_retaliated = false;
+    bool b_retaliated;
 
 public:
-    Pos pos_m;
-    Pos pos;
-    Rect drect;
+    Pos pos_on_map;
 
     Monster(int count, int attack_value, int defense_value, int max_hp);
     Monster(int x, int y, int count, int attack_value, int defense_value, int max_hp);
@@ -30,11 +33,13 @@ public:
     virtual int get_count();
 
     virtual void talk() = 0;
-    virtual int attack() = 0;
-    virtual bool defend(int damage) = 0;
+    virtual damage attack() = 0;
+    virtual bool defend(damage incoming_damage) = 0;
     virtual int retaliate() = 0;
     virtual void retaliate_reset() = 0;
     virtual std::string name() = 0;
+
+    friend bool fight(Hero* hero, Monster* monster);
 };
 
 class Wolf : public Monster
@@ -45,8 +50,8 @@ public:
     ~Wolf();
 
     void talk();
-    int attack();
-    bool defend(int damage);
+    damage attack();
+    bool defend(damage incoming_damage);
     int retaliate();
     void retaliate_reset();
     std::string name();
@@ -60,8 +65,8 @@ public:
     ~Goblin();
 
     void talk();
-    int attack();
-    bool defend(int damage);
+    damage attack();
+    bool defend(damage incoming_damage);
     int retaliate();
     void retaliate_reset();
     std::string name();
@@ -75,8 +80,8 @@ public:
     ~Snake();
 
     void talk();
-    int attack();
-    bool defend(int damage);
+    damage attack();
+    bool defend(damage incoming_damage);
     int retaliate();
     void retaliate_reset();
     std::string name();

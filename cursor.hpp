@@ -26,6 +26,7 @@ class Cursor
 {
 private:
     std::vector<SDL_Cursor*> cursors;
+    int current_cursor;
 
 public:
     Cursor();

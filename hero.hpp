@@ -4,6 +4,7 @@
 #include "game.hpp"
 #include "monster.hpp"
 #include "pos.hpp"
+#include "tile_access_map.hpp"
 
 enum HeroDirection
 {
@@ -21,6 +22,7 @@ enum HeroDirection
 };
 
 class Game;
+class TileAccessMap;
 
 class Hero
 {
@@ -32,29 +34,19 @@ private:
 
 public:
 ////Flags///////////////////////////////////////////
-    bool b_hero_moving = false;
-    bool b_destination_present = false;
-    bool b_out_of_movement_points = false;
-
-////Rects///////////////////////////////////////////
-    Rect hero_drect = Rect(460, 320, 40, 40);
-    Rect destination_mark_drect;
-    std::vector<Rect> destination_dot_drect;
-
-////Points relative to the window///////////////////
-    Pos pos = Pos(460, 320);
-    Pos destination_mark_pos;
-    std::vector<Pos> destination_dot_pos;
+    bool b_hero_moving;
+    bool b_destination_present;
+    bool b_out_of_movement_points;
 
 ////Points relative to the map//////////////////////
-    Pos pos_m;
-    Pos destination_mark_pos_m;
-    std::vector<Pos> destination_dot_pos_m;
+    Pos pos_on_map;
+    Pos destination_mark_pos_on_map;
+    std::vector<Pos> destination_dot_pos_on_map;
 
-    std::vector<int> travel;
+    TileAccessMap* tile_access_map;
+    std::vector<int> current_travel_path;
     std::vector<Monster*> hero_army; // max 5 units
 
-    Hero(Game* game);
     Hero(Game* game, Pos &pos, int max_movement_points);
     ~Hero();
 
