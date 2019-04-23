@@ -51,6 +51,7 @@ public:
     ~Hero();
 
     int move();
+    void stop();
 
 // Seteriai ir geteriai ////////////////////////////////////////////////////////
     void set_direction(int a) {m_direction = a;}

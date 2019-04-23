@@ -33,6 +33,8 @@ int main(int argc, char** argv)
 /// klausimas ar det const prie Game* game?
 /// klausimas ar svarbu padarius koki pakeitima butina istrint overloadintus operatorius
 
+/// I should calculate price differently
+/// update vector map kai kazkas kitas pajuda(ir gal kai endinam turn?)
+
 /// future note: make some blur maybe
-/// maybe clear some of map memory
-/// bug(kinda) galimai stovint istrizai nuo monsterio, kuris taip pat yra uz terraino, bus combat
+/// maybe clear some of map memory idk

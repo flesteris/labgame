@@ -6,6 +6,7 @@ Game::Game() :
     b_end_turn(false),
     map_scroll_direction(8),
     hero_move_speed_counter(0),
+    selected_hero(0),
     map_screen_drect(Rect(0, 0, 960, 680)),
     right_panel_drect(Rect(960, 0, 320, 680)),
     bottom_bar_drect(Rect(0, 680, 1280, 40)),
@@ -23,7 +24,7 @@ Game::Game() :
     images = new Images(this);
     set_monsters();
     end_turn();
-    heroes[0]->tile_access_map->update_accessible_tile_map();
+    heroes[selected_hero]->tile_access_map->update_maps();
 }
 
 Game::~Game()
@@ -71,7 +72,10 @@ void Game::get_input()
             {
                 if(SDL_BUTTON_LEFT == event.button.button && event.button.clicks)
                 {
-                    heroes[0]->b_hero_moving = false;
+                    if(heroes[selected_hero]->b_hero_moving)
+                    {
+                        heroes[selected_hero]->stop();
+                    }
                     selected_pos = Pos(event.button.x, event.button.y) + camera_offset;
                     if(selected_pos.is_in_rect(map_screen_drect))
                     {
@@ -111,7 +115,10 @@ void Game::get_input()
             }
         case SDL_KEYDOWN:
             {
-                heroes[0]->b_hero_moving = false;
+                if(heroes[selected_hero]->b_hero_moving)
+                {
+                    heroes[selected_hero]->stop();
+                }
                 switch(event.key.keysym.sym)
                 {
                 case SDLK_q:
@@ -126,73 +133,73 @@ void Game::get_input()
                     }
                 case SDLK_KP_1:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[SOUTHWEST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[SOUTHWEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_2:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[SOUTH];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[SOUTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_DOWN:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[SOUTH];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[SOUTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_3:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[SOUTHEAST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[SOUTHEAST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_4:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[WEST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[WEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_LEFT:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[WEST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[WEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_6:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[EAST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[EAST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_RIGHT:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[EAST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[EAST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_7:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[NORTHWEST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[NORTHWEST];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_8:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[NORTH];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[NORTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_UP:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[NORTH];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[NORTH];
                         trigger_movement();
                         break;
                     }
                 case SDLK_KP_9:
                     {
-                        selected_pos_on_map = heroes[0]->pos_on_map + DIRECTIONS[NORTHEAST];
+                        selected_pos_on_map = heroes[selected_hero]->pos_on_map + DIRECTIONS[NORTHEAST];
                         trigger_movement();
                         break;
                     }
@@ -203,7 +210,7 @@ void Game::get_input()
                     }
                 case SDLK_m:
                     {
-                        if(heroes[0]->b_destination_present)
+                        if(heroes[selected_hero]->b_destination_present)
                         {
                             trigger_movement();
                         }
@@ -232,7 +239,7 @@ void Game::get_input()
 void Game::update()
 {
     update_cursor();
-    if(heroes[0]->b_hero_moving)
+    if(heroes[selected_hero]->b_hero_moving)
     {
         if(hero_move_speed_counter == hero_move_speed)
         {
@@ -244,7 +251,7 @@ void Game::update()
             ++hero_move_speed_counter;
         }
     }
-    else // So that you couldn't scroll while moving
+    else // so that you couldn't scroll while moving
     {
         update_map_scrolling();
     }
@@ -263,13 +270,13 @@ void Game::draw()
 
 void Game::draw_hero()
 {
-    Pos pos = pos_from_map_to_window(heroes[0]->pos_on_map);
+    Pos pos = pos_from_map_to_window(heroes[selected_hero]->pos_on_map);
     Rect drect = map_screen_drect;
     if(pos.is_in_rect(drect.expand(TILE_WIDTH, TILE_HEIGHT)))
     {
         pos.x -= TILE_WIDTH/2;
         drect = Rect(pos - camera_offset, TILE_WIDTH, TILE_HEIGHT);
-        int image_id = heroes[0]->get_direction();
+        int image_id = heroes[selected_hero]->get_direction();
         images->hero_images[image_id]->draw(Rect(), drect);
     }
 }
@@ -313,135 +320,146 @@ void Game::draw_land()
 
 void Game::end_turn()
 {
-    heroes[0]->set_current_movement_points(heroes[0]->get_max_movement_points());
+    heroes[selected_hero]->set_current_movement_points(heroes[selected_hero]->get_max_movement_points());
     focus_hero();
     std::cout << std::endl << "**********************************************" << std::endl;
     game_time.next_day();
     std::cout << "Your current army:" << std::endl;
-    for(auto hero_army_unit : heroes[0]->hero_army)
+    for(auto hero_army_unit : heroes[selected_hero]->hero_army)
     {
         std::cout << hero_army_unit->get_count() << " " << hero_army_unit->name() << "(s)" << std::endl;
     }
-    /*for(int i = 0; i < (int)heroes[0]->hero_army.size(); ++i)
-    {
-        std::cout << heroes[0]->hero_army[i]->get_count() << " " << heroes[0]->hero_army[i]->name() << "(s)" << std::endl;
-    }*/
     std::cout << "**********************************************" << std::endl << std::endl;
 
 }
 
 void Game::find_path()
 {
-    heroes[0]->current_travel_path.clear();
-    Pos pos_on_map = heroes[0]->destination_mark_pos_on_map;
+    heroes[selected_hero]->current_travel_path.clear();
+    Pos pos = selected_pos_on_map;
+    if(heroes[selected_hero]->tile_access_map->get_tile_access(pos) > 0)
+    {
+        Pos pos = selected_pos_on_map;
+        int vektor = heroes[selected_hero]->tile_access_map->get_tile_vector(pos);
+        while(vektor != NO_DIRECTION)
+        {
+            heroes[selected_hero]->current_travel_path.push_back(vektor);
+            pos -= DIRECTIONS[vektor];
+            vektor = heroes[selected_hero]->tile_access_map->get_tile_vector(pos);
+        }
+    }
+
+/*
+    heroes[selected_hero]->current_travel_path.clear();
+    Pos pos_on_map = heroes[selected_hero]->destination_mark_pos_on_map;
     bool west_f = false, east_f = false;
 
-    while(heroes[0]->pos_on_map != pos_on_map)
+    while(heroes[selected_hero]->pos_on_map != pos_on_map)
     {
-        if(heroes[0]->pos_on_map.x < pos_on_map.x)
+        if(heroes[selected_hero]->pos_on_map.x < pos_on_map.x)
         {
-            heroes[0]->current_travel_path.push_back(EAST);
+            heroes[selected_hero]->current_travel_path.push_back(EAST);
             --pos_on_map.x;
             east_f = true;
         }
-        else if(heroes[0]->pos_on_map.x > pos_on_map.x)
+        else if(heroes[selected_hero]->pos_on_map.x > pos_on_map.x)
         {
-            heroes[0]->current_travel_path.push_back(WEST);
+            heroes[selected_hero]->current_travel_path.push_back(WEST);
             ++pos_on_map.x;
             west_f = true;
         }
-        if(heroes[0]->pos_on_map.y < pos_on_map.y)
+        if(heroes[selected_hero]->pos_on_map.y < pos_on_map.y)
         {
-            int size = heroes[0]->current_travel_path.size() - 1;
+            int size = heroes[selected_hero]->current_travel_path.size() - 1;
             if(east_f)
             {
-                heroes[0]->current_travel_path[size] = SOUTHEAST;
+                heroes[selected_hero]->current_travel_path[size] = SOUTHEAST;
                 --pos_on_map.y;
                 east_f = false;
             }
             else if(west_f)
             {
-                heroes[0]->current_travel_path[size] = SOUTHWEST;
+                heroes[selected_hero]->current_travel_path[size] = SOUTHWEST;
                 --pos_on_map.y;
                 west_f = false;
             }
             else
             {
-                heroes[0]->current_travel_path.push_back(SOUTH);
+                heroes[selected_hero]->current_travel_path.push_back(SOUTH);
                 --pos_on_map.y;
             }
         }
-        else if(heroes[0]->pos_on_map.y > pos_on_map.y)
+        else if(heroes[selected_hero]->pos_on_map.y > pos_on_map.y)
         {
-            int size = heroes[0]->current_travel_path.size() - 1;
+            int size = heroes[selected_hero]->current_travel_path.size() - 1;
             if(east_f)
             {
-                heroes[0]->current_travel_path[size] = NORTHEAST;
+                heroes[selected_hero]->current_travel_path[size] = NORTHEAST;
                 ++pos_on_map.y;
                 east_f = false;
             }
             else if(west_f)
             {
-                heroes[0]->current_travel_path[size] = NORTHWEST;
+                heroes[selected_hero]->current_travel_path[size] = NORTHWEST;
                 ++pos_on_map.y;
                 west_f = false;
             }
             else
             {
-                heroes[0]->current_travel_path.push_back(NORTH);
+                heroes[selected_hero]->current_travel_path.push_back(NORTH);
                 ++pos_on_map.y;
             }
         }
-    }
+    }*/
 }
 
 void Game::lay_down_path()
 {
-    heroes[0]->destination_dot_pos_on_map.clear();
-    if(heroes[0]->current_travel_path.size() > 1)
+    heroes[selected_hero]->destination_dot_pos_on_map.clear();
+    if(heroes[selected_hero]->current_travel_path.size() > 1)
     {
-        Pos pos(heroes[0]->destination_mark_pos_on_map - DIRECTIONS[heroes[0]->current_travel_path[0]]);
-        heroes[0]->destination_dot_pos_on_map.push_back(pos);
-        for(int i = 1; i < (int)heroes[0]->current_travel_path.size() - 1; ++i)
+        Pos pos(heroes[selected_hero]->destination_mark_pos_on_map - DIRECTIONS[heroes[selected_hero]->current_travel_path[0]]);
+        heroes[selected_hero]->destination_dot_pos_on_map.push_back(pos);
+        for(int i = 1; i < (int)heroes[selected_hero]->current_travel_path.size() - 1; ++i)
         {
-            pos = heroes[0]->destination_dot_pos_on_map[i-1] - DIRECTIONS[heroes[0]->current_travel_path[i]];
-            heroes[0]->destination_dot_pos_on_map.push_back(pos);
+            pos = heroes[selected_hero]->destination_dot_pos_on_map[i-1] - DIRECTIONS[heroes[selected_hero]->current_travel_path[i]];
+            heroes[selected_hero]->destination_dot_pos_on_map.push_back(pos);
         }
     }
 }
 
 void Game::draw_path()
 {
-    if(heroes[0]->b_destination_present)
+    if(heroes[selected_hero]->b_destination_present)
     {
-        if(!heroes[0]->get_current_movement_points())
+        if(!heroes[selected_hero]->get_current_movement_points())
         {
-            heroes[0]->b_out_of_movement_points = true;
+            heroes[selected_hero]->b_out_of_movement_points = true;
         }
-        for(int i = heroes[0]->destination_dot_pos_on_map.size() - 1, j = heroes[0]->get_current_movement_points(); i > -1; --i, --j)
+        for(int i = heroes[selected_hero]->destination_dot_pos_on_map.size() - 1, j = heroes[selected_hero]->get_current_movement_points(); i > -1; --i, --j)
         {
-            Pos pos = pos_from_map_to_window(heroes[0]->destination_dot_pos_on_map[i]);
+            Pos pos = pos_from_map_to_window(heroes[selected_hero]->destination_dot_pos_on_map[i]);
             if(pos.is_in_rect(map_screen_drect))
             {
                 pos.x -= TILE_WIDTH/2;
                 Rect drect(pos - camera_offset, TILE_WIDTH, TILE_HEIGHT);
-                int image_id = DESTINATION_DOT + heroes[0]->b_out_of_movement_points;
+                int image_id = DESTINATION_DOT + heroes[selected_hero]->b_out_of_movement_points;
                 images->ui[image_id]->draw(Rect(), drect);
             }
             if(!(j-1))
             {
-                heroes[0]->b_out_of_movement_points = true;
+                heroes[selected_hero]->b_out_of_movement_points = true;
             }
         }
-        Pos pos = pos_from_map_to_window(heroes[0]->destination_mark_pos_on_map);
+        Pos pos = pos_from_map_to_window(heroes[selected_hero]->destination_mark_pos_on_map);
         if(pos.is_in_rect(map_screen_drect))
         {
             pos.x -= TILE_WIDTH/2;
             Rect drect(pos - camera_offset, TILE_WIDTH, TILE_HEIGHT);
-            int image_id = DESTINATION_MARK + heroes[0]->b_out_of_movement_points;
+            int image_id = DESTINATION_MARK + heroes[selected_hero]->b_out_of_movement_points;
             images->ui[image_id]->draw(Rect(), drect);
         }
-        heroes[0]->b_out_of_movement_points = false;
+        heroes[selected_hero]->b_out_of_movement_points = false;
     }
 }
 
@@ -454,23 +472,23 @@ void Game::draw_ui()
 
 void Game::trigger_movement()
 {
-    if(heroes[0]->destination_mark_pos_on_map == selected_pos_on_map && heroes[0]->b_destination_present)
+    if(heroes[selected_hero]->destination_mark_pos_on_map == selected_pos_on_map && heroes[selected_hero]->b_destination_present)
     {
-        heroes[0]->b_hero_moving = true;
+        heroes[selected_hero]->b_hero_moving = true;
     }
     else
     {
-        if(selected_pos_on_map.is_in_rect(0, 0, map.w - 1, map.h - 1) && selected_pos_on_map != heroes[0]->pos_on_map)
+        if(selected_pos_on_map.is_in_rect(0, 0, map.w - 1, map.h - 1) && selected_pos_on_map != heroes[selected_hero]->pos_on_map)
         {
-            heroes[0]->b_destination_present = true;
-            heroes[0]->destination_mark_pos_on_map = selected_pos_on_map;
+            heroes[selected_hero]->b_destination_present = true;
+            heroes[selected_hero]->destination_mark_pos_on_map = selected_pos_on_map;
             find_path();
             lay_down_path();
-            //heroes[0]->destination_mark_pos_on_map.print_coordinates();
+            //heroes[selected_hero]->destination_mark_pos_on_map.print_coordinates();
         }
         else
         {
-            heroes[0]->b_destination_present = false;
+            heroes[selected_hero]->b_destination_present = false;
         }
     }
 }
@@ -519,36 +537,36 @@ bool Game::detect_map_scrolling()
 
 void Game::focus_hero()
 {
-    center_pos_on_map = heroes[0]->pos_on_map;
+    center_pos_on_map = heroes[selected_hero]->pos_on_map;
     camera_offset = Pos();
 }
 
 void Game::update_movement()
 {
     focus_hero();
-    if(heroes[0]->current_travel_path.empty())
+    if(heroes[selected_hero]->current_travel_path.empty())
     {
-        heroes[0]->b_hero_moving = false;
-        heroes[0]->b_destination_present = false;
+        heroes[selected_hero]->stop();
+        heroes[selected_hero]->b_destination_present = false;
     }
     else
     {
-        heroes[0]->set_direction(heroes[0]->current_travel_path.back());
-        if(heroes[0]->move())
+        heroes[selected_hero]->set_direction(heroes[selected_hero]->current_travel_path.back());
+        if(heroes[selected_hero]->move())
         {
-            if(heroes[0]->current_travel_path.size() > 1)
+            if(heroes[selected_hero]->current_travel_path.size() > 1)
             {
-                heroes[0]->destination_dot_pos_on_map.pop_back();
+                heroes[selected_hero]->destination_dot_pos_on_map.pop_back();
             }
-            heroes[0]->current_travel_path.pop_back();
-            if(heroes[0]->current_travel_path.empty())
+            heroes[selected_hero]->current_travel_path.pop_back();
+            if(heroes[selected_hero]->current_travel_path.empty())
             {
                 for(int i = 0; i < (int)monsters.size(); ++i)
                 {
                     Rect drect(monsters[i]->pos_on_map - 1, monsters[i]->pos_on_map + 1);
-                    if(heroes[0]->pos_on_map.is_in_rect(drect))
+                    if(heroes[selected_hero]->pos_on_map.is_in_rect(drect))
                     {
-                        if(fight(heroes[0], monsters[i]))
+                        if(fight(heroes[selected_hero], monsters[i]))
                         {
                             delete monsters[i];
                             monsters.erase(monsters.begin() + i);
@@ -562,13 +580,13 @@ void Game::update_movement()
                         break;
                     }
                 }
-                heroes[0]->b_hero_moving = false;
-                heroes[0]->b_destination_present = false;
+                heroes[selected_hero]->stop();
+                heroes[selected_hero]->b_destination_present = false;
             }
         }
         else
         {
-            heroes[0]->b_hero_moving = false;
+            heroes[selected_hero]->stop();
         }
     }
 }
@@ -646,11 +664,11 @@ void Game::adjust_center_tile(Pos &temp_center_pos_on_map)
 
 bool Game::cursor_on_destination_mark()
 {
-    if(!(heroes[0]->b_destination_present))
+    if(!(heroes[selected_hero]->b_destination_present))
     {
         return 0;
     }
-    Pos pos = pos_from_map_to_window(heroes[0]->destination_mark_pos_on_map);
+    Pos pos = pos_from_map_to_window(heroes[selected_hero]->destination_mark_pos_on_map);
     pos.x -= TILE_WIDTH/2;
     Rect drect(pos - camera_offset, TILE_WIDTH, TILE_HEIGHT);
     if(cursor_pos.is_in_rect(drect))

@@ -53,7 +53,7 @@ public:
     bool b_end_turn;
     int map_scroll_direction;
     int hero_move_speed_counter;
-    //int selected_hero;
+    int selected_hero;
 
 ////Rects///////////////////////////////////////////
     const Rect map_screen_drect;
@@ -66,7 +66,7 @@ public:
 ////Points relative to the window///////////////////
     Pos cursor_pos;
     Pos selected_pos;
-    const Pos center_pos;
+    Pos center_pos;
 
 ////Points relative to the map//////////////////////
     Pos selected_pos_on_map;

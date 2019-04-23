@@ -40,3 +40,9 @@ int Hero::move()
     }
     return 0;
 }
+
+void Hero::stop()
+{
+    b_hero_moving = false;
+    tile_access_map->update_maps();
+}
