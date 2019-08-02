@@ -4,6 +4,8 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 
+#include "exceptions.hpp"
+
 class CursorImage
 {
 public:

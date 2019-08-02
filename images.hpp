@@ -27,6 +27,23 @@ enum MonsterType
     MONSTER_IMAGE_COUNT = 3
 };
 
+enum ObstacleType
+{
+    FOREST_1 = 0,
+    HILLS_1 = 1,
+    HILLS_2 = 2,
+    OBSTACLE_IMAGE_COUNT = 3
+};
+
+enum ResourceType
+{
+    GOLD = 0,
+    MERCURY_CRYSTAL = 1,
+    SULPHUR_CRYSTAL = 2,
+    LIGHTNING_CRYSTAL = 3,
+    RESOURCE_IMAGE_COUNT = 4
+};
+
 enum UI
 {
     RIGHT_PANEL = 0,
@@ -54,9 +71,15 @@ public:
     std::vector<Image*> hero_images;
     std::vector<Image*> ui;
     std::vector<Image*> monster_images;
+    std::vector<Image*> obstacle_images;
+    std::vector<Image*> resource_images;
+    Image* transparent_tile;
+    Image* town_image;
 
     Images(Game* game);
     ~Images();
+
+    void create_images();
     void load_images();
 };
 

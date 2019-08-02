@@ -1,96 +1,53 @@
 #include "tile_access_map.hpp"
 
-TileAccessMap::TileAccessMap(Game* game, Hero* hero) :
-    game(game),
-    hero(hero)
+void TileAccessMap::print_to_files() const // <----- for testing
 {
-    create_maps();
-}
-
-TileAccessMap::~TileAccessMap()
-{
-
-}
-
-void TileAccessMap::create_maps()
-{
-    for(int i = 0; i < game->map.h * game->map.w; ++i)
-    {
-        access_map.push_back(-1);
-        price_map.push_back(-1);
-        vector_map.push_back(-1);
-    }
-}
-
-void TileAccessMap::reset_maps()
-{
-    for(int i = 0; i < game->map.h * game->map.w; ++i)
-    {
-        access_map[i] = -1;
-        price_map[i] = -1;
-        vector_map[i] = -1;
-    }
-}
-
-void TileAccessMap::update_maps()
-{
-    reset_maps();
-    update_tile_access(hero->pos_on_map);
-    update_tile_access_2();
-    set_tile_price(hero->pos_on_map, 0);
-    set_tile_vector(hero->pos_on_map, NO_DIRECTION);
-    std::vector<int> min_values; // *searching for min values in there
-    std::vector<Pos*> min_pos; // what pos is this min value at
-
-    Pos pos = hero->pos_on_map;
-
-    dijkstra(pos);
-
-    std::ofstream map_data("mapped_prices.txt"); // <----- for testing
+    std::ofstream map_data("mapped_prices.txt");
     std::ofstream map_data_2("mapped_vectors.txt");
     std::ofstream map_data_3("mapped_accessibility.txt");
     if(map_data.is_open() && map_data_2.is_open() && map_data_3.is_open())
     {
-        for(int i = 0; i < game->map.h; i++)
+        for(int i = 0; i < game->map->h; i++)
         {
-            for(int j = 0; j < game->map.w; j++)
+            for(int j = 0; j < game->map->w; j++)
             {
-                int value = get_tile_price(Pos(j, i));
+                Pos pos(j, i);
+                int value = price_map[pos];
                 map_data << std::setw(4) << std::right << value;
-                value = get_tile_access(Pos(j, i));
+                value = access_map[pos];
                 map_data_3 << std::setw(4) << std::right << value;
 
-                int vektor = get_tile_vector(Pos(j, i));
+                value = vector_map[pos];
 
-                if(vektor == SOUTHWEST)
+                if(value == SOUTHWEST)
                 {
                     map_data_2 << std::setw(4) << std::right << "v/ ";
                 }
-                else if(vektor == SOUTH)
+                else if(value == SOUTH)
                 {
                     map_data_2 << std::setw(4) << std::right << "vv ";
                 }
-                else if(vektor == SOUTHEAST)
+                else if(value == SOUTHEAST)
                 {
                     map_data_2 << std::setw(4) << std::right << "\\v ";
                 }
-                else if(vektor == EAST)
+                else if(value == EAST)
                 {
                     map_data_2 << std::setw(4) << std::right << "-> ";
                 }
-                else if(vektor == NORTHEAST)
+                else if(value == NORTHEAST)
                 {
                     map_data_2 << std::setw(4) << std::right << "/^ ";
                 }
-                else if(vektor == NORTH)
+                else if(value == NORTH)
                 {
                     map_data_2 << std::setw(4) << std::right << "^^ ";
                 }
-                else if(vektor == NORTHWEST)
+                else if(value == NORTHWEST)
                 {
                     map_data_2 << std::setw(4) << std::right << "^\\ ";
                 }
-                else if(vektor == WEST)
+                else if(value == WEST)
                 {
                     map_data_2 << std::setw(4) << std::right << "<- ";
                 }
@@ -106,131 +63,196 @@ void TileAccessMap::update_maps()
         map_data.close();
         map_data_2.close();
         map_data_3.close();
-    }                                                   // ------
+    }
 }
 
-void TileAccessMap::update_tile_access(const Pos &pos)
+TileAccessMap::TileAccessMap(Game* game, Hero* hero) :
+    game(game),
+    hero(hero),
+    b_updated(true)
 {
-    for(int i = 1; i < DIRECTION_COUNT; i += 2)
+    create_maps();
+}
+
+TileAccessMap::~TileAccessMap()
+{
+    print_to_files();
+}
+
+void TileAccessMap::create_maps()
+{
+    access_map.resize(game->map->w, game->map->h, -1);
+    price_map.resize(game->map->w, game->map->h, -1);
+    vector_map.resize(game->map->w, game->map->h);
+    setup_maps();
+}
+
+void TileAccessMap::reset_maps()
+{
+    for(int i = 0; i < game->map->h * game->map->w; ++i)
+    {
+        access_map[i] = -1;
+        price_map[i] = -1;
+        vector_map[i] = -1;
+    }
+}
+
+void TileAccessMap::update_maps()
+{
+    b_updated = true;
+    reset_maps();
+    setup_maps();
+}
+
+void TileAccessMap::setup_maps()
+{
+    update_tile_access();
+    update_tile_access_2(hero->pos_on_map);
+    update_tile_access_3();
+
+    price_map[hero->pos_on_map] = 0;
+    vector_map[hero->pos_on_map] = NO_DIRECTION;
+    dijkstra(hero->pos_on_map);
+}
+
+void TileAccessMap::update_tile_access()
+{
+    for(int i = 0; i < game->map->w * game->map->h; ++i)
+    {
+        Entity* entity = game->map->entities[i];
+        Obstacle* obstacle = dynamic_cast<Obstacle*> (entity);
+        Town* town = dynamic_cast<Town*> (entity);
+        if(obstacle)
+        {
+            access_map[i] = INACCESSABLE;
+            Forest1* forest1 = dynamic_cast<Forest1*> (obstacle);
+            if(forest1)
+            {
+                Pos temp_pos = forest1->pos_on_map + DIRECTIONS[EAST];
+                access_map[temp_pos] = INACCESSABLE;
+            }
+        }
+        else if(town)
+        {
+            set_access_if_town(town->pos_on_map);
+        }
+    }
+}
+
+void TileAccessMap::set_access_if_town(const Pos &pos)
+{
+    Pos temp_pos = pos;
+    temp_pos += DIRECTIONS[NORTH];
+    access_map[temp_pos] = INACCESSABLE;
+    for(int i = SOUTH; i < NORTH; ++i)
+    {
+        Pos temp_pos_2 = temp_pos + DIRECTIONS[i];
+        access_map[temp_pos_2] = INACCESSABLE;
+    }
+    temp_pos += DIRECTIONS[EAST] + DIRECTIONS[EAST] + DIRECTIONS[EAST];
+    access_map[temp_pos] = INACCESSABLE;
+    for(int i = SOUTHWEST; i < NORTHEAST; ++i)
+    {
+        Pos temp_pos_2 = temp_pos + DIRECTIONS[i];
+        access_map[temp_pos_2] = INACCESSABLE;
+    }
+    for(int i = NORTH; i < DIRECTION_COUNT; ++i)
+    {
+        Pos temp_pos_2 = temp_pos + DIRECTIONS[i];
+        access_map[temp_pos_2] = INACCESSABLE;
+    }
+}
+
+void TileAccessMap::update_tile_access_2(const Pos &pos)
+{
+    for(int i = SOUTHWEST; i < DIRECTION_COUNT; ++i)
     {
         Pos temp_pos = pos + DIRECTIONS[i];
-        if(game->map.get_entity(temp_pos) != -1)
+        if(temp_pos.is_in_rect(game->map_size_rect))
         {
-            if(game->map.get_entity(temp_pos) == 0)
+            int access = access_map[temp_pos];
+            if(access == NOT_SET)
             {
-                if(get_tile_access(temp_pos) == -1)
+                Entity* entity = game->map->entities[temp_pos];
+                if(entity)
                 {
-                    if(monster_nearby(temp_pos))
+                    Monster* monster = dynamic_cast<Monster*> (entity);
+                    Hero* hero = dynamic_cast<Hero*> (entity);
+                    Resource* resource = dynamic_cast<Resource*> (entity);
+                    if(monster)
                     {
-                        set_tile_access(temp_pos, 0);
+                        access_map[temp_pos] = MONSTER;
+                    }
+                    else if(hero)
+                    {
+                        access_map[temp_pos] = HERO;
+                    }
+                    else if(resource)
+                    {
+                        access_map[temp_pos] = RESOURCE;
+                    }
+                }
+                else
+                {
+                    if(game->map->monster_nearby(temp_pos) != temp_pos) //If monster is nearby
+                    {
+                        access_map[temp_pos] = MONSTER_NEARBY;
                     }
                     else
                     {
-                        set_tile_access(temp_pos, 10);
-                        update_tile_access(temp_pos);
+                        access_map[temp_pos] = FREE;
+                        update_tile_access_2(temp_pos);
                     }
                 }
             }
-            //else if other entities
         }
     }
 }
 
-void TileAccessMap::update_tile_access_2()
+void TileAccessMap::update_tile_access_3()
 {
-    for(auto monster : game->monsters)
+    for(int i = 0; i < game->map->w * game->map->h; ++i)
     {
-        for(int i = 0; i < DIRECTION_COUNT; ++i)
+        Entity* entity = game->map->entities[i];
+        Monster* monster = dynamic_cast<Monster*> (entity);
+        Town* town = dynamic_cast<Town*> (entity);
+        if(monster)
         {
-            Pos temp_pos = monster->pos_on_map + DIRECTIONS[i];
-            for(int j = 0; j < DIRECTION_COUNT; j += 2)
+            for(int j = 0; j < DIRECTION_COUNT; ++j)
             {
-                Pos temp_2_pos = temp_pos + DIRECTIONS[j];
-                if(get_tile_access(temp_2_pos) > 0)
+                Pos temp_pos = monster->pos_on_map + DIRECTIONS[j];
+                if(temp_pos.is_in_rect(game->map_size_rect))
                 {
-                    set_tile_access(temp_pos, 0);
-                    break;
+                    int access = access_map[temp_pos];
+                    if(access != NOT_SET)
+                    {
+                        access_map[monster->pos_on_map] = MONSTER;
+                        break;
+                    }
                 }
             }
         }
-    }
-}
-
-bool TileAccessMap::monster_nearby(const Pos &pos) const
-{
-    for(int i = 0; i < DIRECTION_COUNT; ++i)
-    {
-        Pos temp_pos = pos + DIRECTIONS[i];
-        int entity = game->map.get_entity(temp_pos);
-        if(is_monster(entity))
+        else if(town)
         {
-            return true;
+            Pos temp_pos = town->pos_on_map + DIRECTIONS[EAST] + DIRECTIONS[EAST];
+            if(hero->pos_on_map != temp_pos)
+            {
+               for(int i = SOUTHWEST; i < EAST; ++i)
+                {
+                    Pos temp_pos_2 = temp_pos + DIRECTIONS[i];
+                    if(access_map[temp_pos_2] == FREE || access_map[temp_pos_2] == HERO)
+                    {
+                        access_map[temp_pos] = ACCESSABLE_ONLY;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                access_map[temp_pos] = HERO;
+            }
         }
     }
-    return false;
-}
-
-bool TileAccessMap::is_monster(int entity) const
-{
-    if(entity <= 15 && entity > 0)
-    {
-        return true;
-    }
-    return false;
-}
-
-void TileAccessMap::set_tile_access(const Pos &pos, int value)
-{
-    if(pos.x >= game->map.w || pos.y >= game->map.h || pos.x < 0 || pos.y < 0)
-    {
-        return;
-    }
-    access_map[pos.y * game->map.w + pos.x] = value;
-}
-
-int TileAccessMap::get_tile_access(const Pos &pos) const
-{
-    if(pos.x >= game->map.w || pos.y >= game->map.h || pos.x < 0 || pos.y < 0)
-    {
-        return -1;
-    }
-    return access_map[pos.y * game->map.w + pos.x];
-}
-
-void TileAccessMap::set_tile_price(const Pos &pos, int value)
-{
-    if(pos.x >= game->map.w || pos.y >= game->map.h || pos.x < 0 || pos.y < 0)
-    {
-        return;
-    }
-    price_map[pos.y * game->map.w + pos.x] = value;
-}
-
-int TileAccessMap::get_tile_price(const Pos &pos) const
-{
-    if(pos.x >= game->map.w || pos.y >= game->map.h || pos.x < 0 || pos.y < 0)
-    {
-        return -1; // might be not ok idk
-    }
-    return price_map[pos.y * game->map.w + pos.x];
-}
-
-void TileAccessMap::set_tile_vector(const Pos &pos, int value)
-{
-    if(pos.x >= game->map.w || pos.y >= game->map.h || pos.x < 0 || pos.y < 0)
-    {
-        return;
-    }
-    vector_map[pos.y * game->map.w + pos.x] = value;
-}
-
-int TileAccessMap::get_tile_vector(const Pos &pos) const
-{
-    if(pos.x >= game->map.w || pos.y >= game->map.h || pos.x < 0 || pos.y < 0)
-    {
-        return -1;
-    }
-    return vector_map[pos.y * game->map.w + pos.x];
 }
 
 void TileAccessMap::dijkstra(const Pos &pos)
@@ -238,77 +260,110 @@ void TileAccessMap::dijkstra(const Pos &pos)
     for(int i = 0; i < DIRECTION_COUNT; ++i)
     {
         Pos temp_pos = pos + DIRECTIONS[i];
-        int access;
-        if(i % 2 == 0) // is the tile we're accessing diagonal from the current one
+        if(temp_pos.is_in_rect(game->map_size_rect))
         {
-            access = get_tile_access(temp_pos) * 1.41; // ... * square root of 2;
-        }
-        else
-        {
-            access = get_tile_access(temp_pos);
-        }
-
-
-        /*if(access == 0)
-        {
-
-        }
-        else*/ if(access > 0)
-        {
-            int price = get_tile_price(pos) + access;
-            int price_2 = get_tile_price(temp_pos);
-            if(price_2 == -1)
+            int access = access_map[temp_pos];
+            int access_2 = access_map[pos];
+            bool b_is_diagonal = (i + 1) % 2;
+            int price = price_map[pos];
+            int price_2 = price_map[temp_pos];
+            if(b_is_diagonal)
             {
-                dijkstra_values.push_back(price);
-                dijkstra_pos.push_back(new Pos(temp_pos));
-                set_tile_price(temp_pos, price);
-                set_tile_vector(temp_pos, i);
-                bring_min_to_front();
+                price += 10 * 1.41; // PRICE sometime will depend on the tile or smth
             }
-            else if(price < price_2)
+            else
             {
-                for(int j = 0; j < dijkstra_values.size(); ++j) /// maybe optimisible
-                {
-                    if(*dijkstra_pos[j] == temp_pos)
-                    {
-                        dijkstra_values[j] = price;
-                        set_tile_price(temp_pos, price);
-                        set_tile_vector(temp_pos, i);
-                        break;
-                    }
-                }
-                bring_min_to_front();
+                price += 10;
+            }
+            dijkstra_2(price, price_2, access, access_2, i, pos, temp_pos);
+        }
+    }
+    next_min_value();
+}
+
+void TileAccessMap::dijkstra_2(int price, int price_2, int access, int access_2,
+                               int i, const Pos &pos, const Pos &temp_pos)
+{
+    if(access_2 == MONSTER_NEARBY && pos != hero->pos_on_map)
+    {
+        if(game->map->is_monster(temp_pos))
+        {
+            if(price_2 == NOT_SET || price < price_2)
+            {
+                price_map[temp_pos] = price;
+                vector_map[temp_pos] = i;
             }
         }
     }
-
-    if(!dijkstra_values.empty())
+    else if(access == RESOURCE)
     {
-        Pos pos_2 = *dijkstra_pos[0];
-        dijkstra_values.erase(dijkstra_values.begin());
-        delete dijkstra_pos[0];
-        dijkstra_pos.erase(dijkstra_pos.begin());
+        if(price_2 == NOT_SET || price < price_2)
+        {
+            price_map[temp_pos] = price;
+            vector_map[temp_pos] = i;
+        }
+    }
+    else if(access >= 0) // else other access type
+    {
+        if(price_2 == NOT_SET)
+        {
+            dijkstra_min_values.push_back(new Pos(temp_pos));
+            price_map[temp_pos] = price;
+            vector_map[temp_pos] = i;
+            sort_dijkstra_pos_from_end();
+        }
+        else if(price < price_2)
+        {
+            price_map[temp_pos] = price;
+            vector_map[temp_pos] = i;
+            sort_dijkstra_pos_from_begining();
+        }
+    }
+}
+
+void TileAccessMap::next_min_value()
+{
+    if(!dijkstra_min_values.empty())
+    {
+        Pos pos_2 = **(dijkstra_min_values.end() - 1);
+        delete *(dijkstra_min_values.end() - 1);
+        dijkstra_min_values.pop_back();
         dijkstra(pos_2);
     }
 }
 
-void TileAccessMap::bring_min_to_front()
+void TileAccessMap::sort_dijkstra_pos_from_end()
 {
-    int temp_min = dijkstra_values[0], min_index = 0;
-    for(int i = 1; i < dijkstra_values.size(); ++i)
+    std::vector<Pos*>::iterator it;
+    for(it = dijkstra_min_values.end() - 1; it > dijkstra_min_values.begin(); --it)
     {
-        if(temp_min > dijkstra_values[i])
+        int price = price_map[**it];
+        int price_2 = price_map[**(it - 1)];
+        if(price > price_2)
         {
-            temp_min = dijkstra_values[i];
-            min_index = i;
+            Pos* temp = *it;
+            *it = *(it - 1);
+            *(it - 1) = temp;
+        }
+        else
+        {
+            break;
         }
     }
-    if(min_index != 0)
+}
+
+void TileAccessMap::sort_dijkstra_pos_from_begining()
+{
+    std::vector<Pos*>::iterator it;
+    for(it = dijkstra_min_values.begin(); it < dijkstra_min_values.end() - 1; ++it)
     {
-        dijkstra_values[min_index] = dijkstra_values[0];
-        dijkstra_values[0] = temp_min;
-        Pos pos = *dijkstra_pos[min_index];
-        *dijkstra_pos[min_index] = *dijkstra_pos[0];
-        *dijkstra_pos[0] = pos;
+        int price = price_map[**it];
+        int price_2 = price_map[**(it + 1)];
+        if(price < price_2)
+        {
+            Pos* temp = *it;
+            *it = *(it + 1);
+            *(it + 1) = temp;
+        }
     }
 }

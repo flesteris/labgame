@@ -19,12 +19,19 @@ void Image::draw(const Rect& srect, const Rect& drect)
     SDL_RenderCopy(game->window->ren, texture, sdl_srect_ptr, sdl_drect_ptr);
 }
 
-void Image::loadBMP(const std::string filename)
+void Image::loadBMP(const std::string &filename)
 {
     SDL_Surface* surface = SDL_LoadBMP(filename.c_str()); // Uzkraunam BMP i atminti
-    if(surface)
+    if(!surface)
     {
-        texture = SDL_CreateTextureFromSurface(game->window->ren, surface); // Is paveiksliuko padarom tekstura, kuria galima piesti i ekrana
-        SDL_FreeSurface(surface); // Paveiksliuko daugiau nebereikia, nes turim tekstura
+        throw SDL_bmp_load_error(filename);
+    }
+    texture = SDL_CreateTextureFromSurface(game->window->ren, surface); // Is paveiksliuko padarom tekstura, kuria galima piesti i ekrana
+    SDL_FreeSurface(surface);
+    if(!texture)
+    {
+        throw SDL_texture_error();
     }
 }
+
+

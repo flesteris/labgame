@@ -14,17 +14,18 @@ Window::~Window()
 void Window::create_window()
 {
     win = SDL_CreateWindow("Spicy boi", 320, 180, WINDOW_WIDTH, WINDOW_HEIGTH, SDL_WINDOW_SHOWN);
-    if (win == nullptr)
+    if(!win)
     {
-        std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
+        throw SDL_window_error();
     }
 
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (ren == nullptr)
+    if(!ren)
     {
         SDL_DestroyWindow(win);
-        std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
+        throw SDL_renderer_error();
     }
+
     SDL_RaiseWindow(win);
     SDL_SetWindowGrab(win, SDL_TRUE);
 }

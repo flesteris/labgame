@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
+#include "exceptions.hpp"
+
 enum WindowDimensions
 {
     WINDOW_WIDTH = 1280,

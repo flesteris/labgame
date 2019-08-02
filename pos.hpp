@@ -1,7 +1,7 @@
 #ifndef POS_HPP
 #define POS_HPP
 
-#include <iostream> /// Just for a test helper
+#include <iostream>
 
 #include "rect.hpp"
 
@@ -18,11 +18,10 @@ public:
 
     Pos operator +(const Pos &other) const;
     Pos operator +(int other) const;
-    Pos &operator ++();
-    Pos &operator +=(const Pos &other);
+    Pos& operator +=(const Pos &other);
     Pos operator -(const Pos &other) const;
     Pos operator -(int other) const;
-    Pos &operator -=(const Pos &other);
+    Pos& operator -=(const Pos &other);
     Pos operator *(const Pos &other) const;
     Pos operator *(int other) const;
     bool operator ==(const Pos &other) const;
@@ -32,10 +31,9 @@ public:
     bool is_in_rect(const Pos &pos, int w, int h) const;
     bool is_in_rect(int uper_left_x, int uper_left_y, int w, int h) const;
     void fit_in_rect(const Rect &rect);
-    void print_coordinates() const; /// Just a test helper
-
-    //static Pos from_direction(Direction dir);
 };
+
+std::ostream& operator<<(std::ostream &os, const Pos &pos);
 
 extern const Pos DIRECTIONS[9];
 

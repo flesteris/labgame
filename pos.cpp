@@ -2,6 +2,12 @@
 
 const Pos DIRECTIONS[] = {Pos(-1, 1), Pos(0, 1), Pos(1, 1), Pos(1, 0), Pos(1, -1), Pos(0, -1), Pos(-1, -1), Pos(-1, 0), Pos(0, 0)};
 
+std::ostream& operator<<(std::ostream &os, const Pos &pos)
+{
+    os << "X: " << pos.x << ", Y: " << pos.y << "." << std::endl;
+    return os;
+}
+
 Pos::Pos() : x(0), y(0)
 {
 
@@ -20,13 +26,6 @@ Pos Pos::operator +(const Pos &other) const
 Pos Pos::operator +(int other) const
 {
     return Pos(x + other, y + other);
-}
-
-Pos &Pos::operator++() // Called for ++Pos
-{
-    ++x;
-    ++y;
-    return *this;
 }
 
 Pos &Pos::operator +=(const Pos &other)
@@ -119,10 +118,3 @@ void Pos::fit_in_rect(const Rect &rect)
         y = rect.h + rect.pos->y;
     }
 }
-
-void Pos::print_coordinates() const /// Just a test helper
-{
-    std::cout << "x: " << x << ", y: " << y << "." << std::endl;
-}
-
-//static Pos Pos::from_direction(Direction dir);

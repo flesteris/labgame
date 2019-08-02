@@ -1,12 +1,14 @@
 #ifndef HERO_HPP
 #define HERO_HPP
 
+#include "entity.hpp"
 #include "game.hpp"
 #include "monster.hpp"
 #include "pos.hpp"
+#include "resource.hpp"
 #include "tile_access_map.hpp"
 
-enum HeroDirection
+enum Direction
 {
     SOUTHWEST = 0,
     SOUTH = 1,
@@ -22,38 +24,43 @@ enum HeroDirection
 };
 
 class Game;
+class Monster;
+class Resource;
 class TileAccessMap;
 
-class Hero
+class Hero : public Entity
 {
 private:
     int m_direction;
     int m_max_movement_points;
     int m_current_movement_points; // starts at max each turn
-    Game* game;
 
 public:
 ////Flags///////////////////////////////////////////
+    bool b_alive;
     bool b_hero_moving;
     bool b_destination_present;
     bool b_out_of_movement_points;
-
 ////Points relative to the map//////////////////////
-    Pos pos_on_map;
     Pos destination_mark_pos_on_map;
     std::vector<Pos> destination_dot_pos_on_map;
 
     TileAccessMap* tile_access_map;
     std::vector<int> current_travel_path;
-    std::vector<Monster*> hero_army; // max 5 units
+    std::array<Monster*, 5> hero_army; // max 5 units
 
-    Hero(Game* game, Pos &pos, int max_movement_points);
+    Hero(Game* game, const Pos &pos_on_map, int max_movement_points);
     ~Hero();
 
-    int move();
+    bool move();
+    bool initiate_combat(const Pos &monster_pos_on_map);
+    void collect_resource(Resource* resource);
+    void sort_hero_army();
     void stop();
+    void reset_movement_points();
+    void draw_entity(const Rect &drect) const;
 
-// Seteriai ir geteriai ////////////////////////////////////////////////////////
+////Seteriai ir geteriai////////////////////////////////////////////////////////
     void set_direction(int a) {m_direction = a;}
     int get_direction() {return m_direction;}
 
@@ -63,8 +70,6 @@ public:
     void set_current_movement_points(int a) {m_current_movement_points = a;}
     int get_current_movement_points() {return m_current_movement_points;}
 ////////////////////////////////////////////////////////////////////////////////
-
-    friend void draw_land(Game* game);
 };
 
 #endif //HERO_HPP

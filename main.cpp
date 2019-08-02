@@ -1,18 +1,13 @@
 #include <iostream>
 #include <SDL2/SDL.h>
-//#include <SDL_ttf.h>
+#include <SDL_ttf.h>
+
 //#include <SDL_image.h>
 
 #include "game.hpp"
 
-int main(int argc, char** argv)
+void run_game_loop()
 {
-    if(SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
-        std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
     Game game;
 
     while(!game.b_quit)
@@ -22,19 +17,53 @@ int main(int argc, char** argv)
         game.draw();
         SDL_Delay(1000 / 60);
     }
-
-    SDL_Quit();
-    return 0;
 }
 
-/// klausimas del auto iteratoriaus (kai reikalingas index i, ar kai pradedama iteruoti nuo 1, o ne nuo 0)
-/// klausimas should I SDL_RenderClear(window->ren);
-/// klausimas ar return damage(int + int...);?,
-/// klausimas ar det const prie Game* game?
-/// klausimas ar svarbu padarius koki pakeitima butina istrint overloadintus operatorius
+int main(int argc, char** argv)
+{
+    try
+    {
+        if(SDL_Init(SDL_INIT_VIDEO) != 0)
+        {
+            throw SDL_Init_error();
+        }
+        if(TTF_Init() == -1)
+        {
+            SDL_Quit();
+            throw TTF_Init_error();
+        }
 
+        run_game_loop();
+
+        TTF_Quit();
+        SDL_Quit();
+        return 0;
+    }
+    catch(const std::exception &e)
+    {
+        TTF_Quit();
+        SDL_Quit();
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+}
+
+
+/// HERO ARMY MANAGEMENT
+/// TOOOOOWN
+/// BATTLE RESULTS
+/// animacijos
+/// mapo remai
+/// fog of war
+/// music
+/// entity colision
+
+/// cursor kai ant pilies
+/// ar abu draw boxes naudojami?
+/// draw_path() is garbage
+/// praplesti path piesimo area
+/// nudazyt destination mark raudonai kai fight() bus
 /// I should calculate price differently
-/// update vector map kai kazkas kitas pajuda(ir gal kai endinam turn?)
-
-/// future note: make some blur maybe
-/// maybe clear some of map memory idk
+/// direction type
+/// padaryt kad veiktu su dviem heroes
+/// smooth vaiksciojimas

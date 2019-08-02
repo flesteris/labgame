@@ -5,15 +5,14 @@
 
 class GameTime
 {
-private:
+public:
     int day;
     int week;
     int month;
 
-public:
     GameTime();
     ~GameTime();
-    void print_date();
+
     void next_day();
 };
 

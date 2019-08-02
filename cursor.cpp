@@ -9,7 +9,10 @@ Cursor::Cursor()
 
 Cursor::~Cursor()
 {
-    cursors.clear();
+    for(auto cursor : cursors)
+    {
+        SDL_FreeCursor(cursor);
+    }
 }
 
 void Cursor::load_surfaces()
@@ -33,6 +36,8 @@ void Cursor::load_surfaces()
     cursor_image->loadBMP("images//cursors//W_arrow.bmp");
     cursors.push_back(SDL_CreateColorCursor(cursor_image->surface, 0, 10));
     cursor_image->loadBMP("images//cursors//normal_cursor.bmp");
+    cursors.push_back(SDL_CreateColorCursor(cursor_image->surface, 0, 0));
+    cursor_image->loadBMP("images//cursors//accessible_cursor.bmp");
     cursors.push_back(SDL_CreateColorCursor(cursor_image->surface, 0, 0));
     cursor_image->loadBMP("images//cursors//go_to_destination.bmp");
     cursors.push_back(SDL_CreateColorCursor(cursor_image->surface, 10, 10));

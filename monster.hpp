@@ -3,15 +3,19 @@
 
 #include <time.h>
 
+#include "entity.hpp"
+#include "game.hpp"
+#include "hero.hpp"
 #include "pos.hpp"
 #include "rect.hpp"
-#include "hero.hpp"
 
 typedef int damage;
 
+class Entity;
 class Hero;
+class Game;
 
-class Monster
+class Monster : public Entity
 {
 protected:
     int count;
@@ -20,24 +24,26 @@ protected:
     int current_hp;
     int max_hp;
     int health_pool;
-    bool b_retaliated;
 
 public:
-    Pos pos_on_map;
+    bool b_retaliated;
+    static int object_count;
 
-    Monster(int count, int attack_value, int defense_value, int max_hp);
-    Monster(int x, int y, int count, int attack_value, int defense_value, int max_hp);
+    Monster(Game* game, int count, int attack_value, int defense_value, int max_hp);
+    Monster(Game* game, const Pos &pos_on_map, int count, int attack_value, int defense_value, int max_hp);
+    Monster(const Monster &other);
     virtual ~Monster();
 
-    virtual int get_defense_value();
-    virtual int get_count();
+    virtual int get_defense_value() const;
+    virtual int get_count() const;
 
-    virtual void talk() = 0;
-    virtual damage attack() = 0;
+    virtual damage attack() const = 0;
     virtual bool defend(damage incoming_damage) = 0;
     virtual int retaliate() = 0;
     virtual void retaliate_reset() = 0;
-    virtual std::string name() = 0;
+    virtual std::string name() const = 0;
+
+    static int get_object_count() {return object_count;}
 
     friend bool fight(Hero* hero, Monster* monster);
 };
@@ -45,46 +51,46 @@ public:
 class Wolf : public Monster
 {
 public:
-    Wolf(int count_);
-    Wolf(int x, int y, int count_);
+    Wolf(Game* game, int count_);
+    Wolf(Game* game, const Pos &pos_on_map, int count_);
     ~Wolf();
 
-    void talk();
-    damage attack();
+    damage attack() const;
     bool defend(damage incoming_damage);
     int retaliate();
     void retaliate_reset();
-    std::string name();
+    std::string name() const;
+    void draw_entity(const Rect &drect) const;
 };
 
 class Goblin : public Monster
 {
 public:
-    Goblin(int count_);
-    Goblin(int x, int y, int count_);
+    Goblin(Game* game, int count_);
+    Goblin(Game* game, const Pos &pos_on_map, int count_);
     ~Goblin();
 
-    void talk();
-    damage attack();
+    damage attack() const;
     bool defend(damage incoming_damage);
     int retaliate();
     void retaliate_reset();
-    std::string name();
+    std::string name() const;
+    void draw_entity(const Rect &drect) const;
 };
 
 class Snake : public Monster
 {
 public:
-    Snake(int count_);
-    Snake(int x, int y, int count_);
+    Snake(Game* game, int count_);
+    Snake(Game* game, const Pos &pos_on_map, int count_);
     ~Snake();
 
-    void talk();
-    damage attack();
+    damage attack() const;
     bool defend(damage incoming_damage);
     int retaliate();
     void retaliate_reset();
-    std::string name();
+    std::string name() const;
+    void draw_entity(const Rect &drect) const;
 };
 
 #endif // MONSTER_HPP

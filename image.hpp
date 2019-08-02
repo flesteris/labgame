@@ -19,8 +19,10 @@ public:
     Image(Game* game);
     ~Image();
 
-    void draw(const Rect& srect, const Rect& drect);
-    void loadBMP(const std::string filename);
+    void draw(const Rect &srect, const Rect &drect);
+    void loadBMP(const std::string &filename);
+
+    friend class WindowBox;
 };
 
 #endif

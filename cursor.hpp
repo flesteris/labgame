@@ -17,9 +17,10 @@ enum CursorType
     NW_ARROW = 6,
     W_ARROW = 7,
     NORMAL_CURSOR = 8,
-    GO_TO_DESTINATION = 9,
-    COMBAT_CURSOR = 10,
-    CURSOR_IMAGE_COUNT = 11
+    ACCESSIBLE_CURSOR = 9,
+    GO_TO_DESTINATION = 10,
+    COMBAT_CURSOR = 11,
+    CURSOR_IMAGE_COUNT = 12
 };
 
 class Cursor
